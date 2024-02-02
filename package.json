@@ -1,0 +1,17 @@
+{
+  "name": "mern-blog-project-backend",
+  "version": "1.0.0",
+  "description": "Api for the MERN blog website",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1"
+  }
+}
