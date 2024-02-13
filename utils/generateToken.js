@@ -5,13 +5,12 @@ const generateToken = (user) =>{
 
     const payload = {
         user:{
-            id: user.id,
-            
-        }
-    }
+            id: user.id,      
+        },
+    };
 
     //  sign the token with a secret key and expiration date
-    const token =jwt.sign(payload,"ankey",{expiresIn:36000});// expires after an hour
+    const token =jwt.sign(payload,"anykey",{expiresIn:36000});// expires after an hour
     return token;
 }
 
