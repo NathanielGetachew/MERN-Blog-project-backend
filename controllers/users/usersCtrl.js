@@ -1,5 +1,6 @@
 const User = require("../../model/User/User");
 const bcrypt = require("bcryptjs");
+const asynchandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 
 
@@ -7,9 +8,9 @@ const generateToken = require("../../utils/generateToken");
 //@route POST /api/v1/users/register
 //@access Public
 
-exports.register = async (req, res) => {
+exports.register = asynchandler(async (req, res) => {
   console.log(req.body);
-  try {
+  
     //get the details
     const { username, password, email } = req.body;
     // check if the user exists already
@@ -38,20 +39,15 @@ exports.register = async (req, res) => {
       // role: newUser?.role,
       newUser,
     });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      message: error?.message,
-    });
-  }
-};
+   
+});
 
 // login a registered user
 //@route POST /api/v1/users/login
 //@access Public
 
-exports.login = async (req, res) => {
-  try {
+exports.login = asynchandler(async (req, res) => {
+  
     // get the login details
     const { username, password } = req.body;
     // check if the user exists in the database
@@ -76,34 +72,23 @@ exports.login = async (req, res) => {
       role: user?.role,
       token: generateToken(user),
     });
-  } catch (error) {
-    res.json({
-      status: "failed",
-      message: error?.message,
-    });
-  }
-};
+   
+});
 
 //@des Get profile
 //@route POST /api/v1/users/profile/:id
 //@access Public
 
-exports.getProfile = async (req, res) => {
-   //console.log(req.userAuth);
-  console.log(req.params) 
-  try {
-    const id = req.userAuth._id;
-    const user = await User.findById(id)
-    console.log(user);
-    res.json({
-      status: "success",
-      message: "Profile fetched",
-      user,
-    });
-  } catch (error) {
-    res.json({
-      status: "Failed",
-      message: error?.message,
-    });
-  }
-};
+exports.getProfile = asynchandler(async (req, res,next) => {
+ // trigger custom error
+
+   const id = req.userAuth._id;
+   const user = await User.findById(id)
+   res.json({
+     status: "success",
+     message: "Profile fetched",
+     user,
+   });
+ 
+}
+);
