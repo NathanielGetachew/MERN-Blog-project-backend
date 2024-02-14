@@ -18,7 +18,8 @@ const isLoggedin = (req, res, next) => {
     next();
 
     if (err) {
-      return "Ivalid Token";
+      const err = new Error("Token expired/Invalid")
+      next(err);
     } else {
     }
   });
