@@ -15,7 +15,7 @@ categoryRouter.get("/",getCategories);
 categoryRouter.delete("/:id",isLoggedin,deleteCategories );
 
 // update
-categoryRouter.put("/:id",isLoggedin, updateCategories);
+categoryRouter.put("/:id",isLoggedin,updateCategories);
 
 // export
 module.exports = categoryRouter;

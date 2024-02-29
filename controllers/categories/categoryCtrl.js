@@ -28,7 +28,6 @@ exports.createCategory = asynchandler(async (req, res) => {
 // @access Public
 exports.getCategories = asynchandler(async (req, res) => {
   const categories = await Category.find({});
-
   res.status(201).json({
     status: "success",
     message: "Categories Fetched Successfuly",

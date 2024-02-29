@@ -6,7 +6,7 @@ const isLoggedin = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   // verify the token
-  jwt.verify(token, "anykey", async (err, decoded) => {
+  jwt.verify(token, process.env.JWT_KEY, async (err, decoded) => {
     // add the user to the req object
     // get the user id
     const userId = decoded?.user?.id;
