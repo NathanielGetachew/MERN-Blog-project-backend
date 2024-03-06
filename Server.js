@@ -10,6 +10,7 @@ const {
 const categoryRouter = require("./routes/category/categoryRouter.js");
 require("./config/database.js")();
 const postRouter = require("./routes/post/postRouter.js");
+const commentRouter = require("./routes/comments/commentRouter.js");
 
 // server
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.json()); // pass the incoming datas
 app.use("/api/v1/users", usersRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/posts", postRouter);
+app.use("/api/v1/comments", commentRouter);
 
 // Not found middleware
 app.use(notFound);

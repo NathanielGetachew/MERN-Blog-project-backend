@@ -44,12 +44,12 @@ exports.createPost = asynchandler(async (req, res) => {
 // @route GET /api/v1/posts
 // @access Public
 exports.getPosts = asynchandler(async (req, res) => {
-  const posts = await Post.find({});
+  const posts = await Post.find({}).populate("comments");
+
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
-    posts
-    
+    posts,
   });
 });
 
@@ -92,6 +92,6 @@ exports.updatePost = asynchandler(async (req, res) => {
   res.status(201).json({
     status: "Success",
     message: "Post Updated  Successfully",
-    post
+    post,
   });
 });
