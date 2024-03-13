@@ -6,9 +6,10 @@ const {
   blockUser,
   unBLockUser,
   ProfileViewers,
+  followingUser,
+  UnfollowingUser,
 } = require("../../controllers/users/usersCtrl.js");
-isLoggedin = require("../../middlewares/isLoggedin.js")
-
+isLoggedin = require("../../middlewares/isLoggedin.js");
 
 const usersRouter = express.Router();
 
@@ -19,18 +20,20 @@ usersRouter.post("/register", register);
 usersRouter.post("/login", login);
 
 // Profile
-usersRouter.get("/profile/",isLoggedin, getProfile);
+usersRouter.get("/profile/", isLoggedin, getProfile);
 
 // block user
-usersRouter.put("/block/:userIdToBlock",isLoggedin, blockUser);
+usersRouter.put("/block/:userIdToBlock", isLoggedin, blockUser);
 
 // Unblock user
-usersRouter.put("/unblock/:userIdToUnBlock",isLoggedin, unBLockUser);
+usersRouter.put("/unblock/:userIdToUnBlock", isLoggedin, unBLockUser);
 
-usersRouter.get("/profile_viewer/:userProfileId",isLoggedin,ProfileViewers);
+// profile Viewers
+usersRouter.get("/profile_viewer/:userProfileId", isLoggedin, ProfileViewers);
 
 
-
+//  User Unfollowing
+usersRouter.put("/UnFollowing/:userIdToUnFollow", isLoggedin, UnfollowingUser);
 
 
 
