@@ -8,6 +8,8 @@ const {
   ProfileViewers,
   followingUser,
   UnfollowingUser,
+  forgotPassword,
+  resetPassword,
 } = require("../../controllers/users/usersCtrl.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
 
@@ -31,10 +33,17 @@ usersRouter.put("/unblock/:userIdToUnBlock", isLoggedin, unBLockUser);
 // profile Viewers
 usersRouter.get("/profile_viewer/:userProfileId", isLoggedin, ProfileViewers);
 
+//  User Unfollowing
+usersRouter.put("/Following/:userIdToFollow", isLoggedin, followingUser);
 
 //  User Unfollowing
 usersRouter.put("/UnFollowing/:userIdToUnFollow", isLoggedin, UnfollowingUser);
 
+// forgot password
+usersRouter.post("/forgot-password", forgotPassword);
+
+// reset password
+usersRouter.post("/reset-password/:resetToken", resetPassword);
 
 
 // export

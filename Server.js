@@ -11,6 +11,7 @@ const categoryRouter = require("./routes/category/categoryRouter.js");
 require("./config/database.js")();
 const postRouter = require("./routes/post/postRouter.js");
 const commentRouter = require("./routes/comments/commentRouter.js");
+const sendEmail = require("./utils/sendEmail.js");
 
 // server
 const app = express();

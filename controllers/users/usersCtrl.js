@@ -1,14 +1,17 @@
 const User = require("../../model/User/User");
+const crypto = require("crypto")
 const bcrypt = require("bcryptjs");
 const asynchandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
+const expressAsyncHandler = require("express-async-handler");
+const sendEmail = require("../../utils/sendEmail");
 
 //@desc Register a new user
 //@route POST /api/v1/users/register
 //@access Public
 
 exports.register = asynchandler(async (req, res) => {
-  console.log(req.body);
+  
 
   //get the details
   const { username, password, email } = req.body;
@@ -259,6 +262,68 @@ exports.UnfollowingUser = asynchandler(async(req,res)=>{
   })
 
 })
+
+//@des forgot password 
+//@route POST /api/v1/users/forgot-password
+//@access public
+
+exports.forgotPassword= expressAsyncHandler(async (req,res)=>{
+  const {email} = req.body;
+  // find the email in the db
+  const userFound = await User.findOne({email});
+  if( !userFound ) {
+    throw new Error("There's No Such Email in our System");
+    // Generate the token
+  }
+    const resetToken  =await userFound.generatePasswordResetToken();
+
+    // resave the user
+    await userFound.save();
+
+    // send Email
+    sendEmail(email ,resetToken);
+    res.status(200).json({
+      message:"password reset email sent",resetToken
+    });
+  
+})
+
+//  @desc Reset Password
+// @route PUT /api/v1/users/reset-password/:token
+// @access Public
+ exports.resetPassword = expressAsyncHandler(async(req,res)=>{
+  // Get the id/token form email/params
+  const {resetToken} = req.params;
+  const {password} = req.body;
+  // convert the token to actual token that has been saved in the DB
+   const crypotToken = crypto
+   .createHash("sha256")
+   .update(resetToken)
+   .digest("hex");
+   // find the user by the crypto token
+   const userFound = await User.findOne({
+    passwordResetToken:crypotToken,
+    passwordResetExpires:{$gt : Date.now()}
+   });
+   if(!userFound){
+     throw new Error("Invalid or expired password reset Token");
+   }
+   // update the user password
+   const salt = await bcrypt.genSalt(10);
+   userFound.password = await bcrypt.hash(password,salt);
+   // emptying the resetToken and exry date
+   userFound.passwordResetToken=undefined;
+   userFound.passwordResetExpires=undefined;
+   // resave the user
+   await  userFound.save();
+   // return a success response
+   res.status(200).json({
+    message:"Password reset succesfully"
+   })
+   
+});
+
+
 
 
 
