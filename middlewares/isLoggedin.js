@@ -11,7 +11,7 @@ const isLoggedin = (req, res, next) => {
     // get the user id
     const userId = decoded?.user?.id;
 
-    const user = await User.findById(userId).maxTimeMS(30000).select("username email role _id"); // Increase timeout to 30 seconds
+    const user = await User.findById(userId).maxTimeMS(30000).select("username  email role _id"); // Increase timeout to 30 seconds
     // save the user into the req obj
     req.userAuth = user;
 

@@ -14,6 +14,8 @@ exports.createPost = asynchandler(async (req, res) => {
   if (postFound) {
     throw new Error("Post already exists");
   }
+// check if the user account is verified
+
   // create the post
 
   const post = await Post.create({

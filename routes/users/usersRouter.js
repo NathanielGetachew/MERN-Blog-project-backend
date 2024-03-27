@@ -10,6 +10,8 @@ const {
   UnfollowingUser,
   forgotPassword,
   resetPassword,
+  accountVerificationEmail,
+  verifyAccount
 } = require("../../controllers/users/usersCtrl.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
 
@@ -44,6 +46,12 @@ usersRouter.post("/forgot-password", forgotPassword);
 
 // reset password
 usersRouter.post("/reset-password/:resetToken", resetPassword);
+//  account verification email
+usersRouter.put("/accountVerificationEmail", isLoggedin,accountVerificationEmail);
+
+usersRouter.put("/account-verification/:verifyToken", isLoggedin,verifyAccount);
+
+
 
 
 // export

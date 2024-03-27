@@ -5,6 +5,7 @@ const asynchandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const expressAsyncHandler = require("express-async-handler");
 const sendEmail = require("../../utils/sendEmail");
+const SendAccVerificationEmail = require("../../utils/SendAccVerificationEmail");
 
 //@desc Register a new user
 //@route POST /api/v1/users/register
@@ -54,13 +55,14 @@ exports.login = asynchandler(async (req, res) => {
   const user = await User.findOne({ username }).select("+password");
   if (!user) {
     throw new Error("Invalid login Credentials");
-
+  }
     // compare the hashed password with the one the  user entered
     const isMatched = await bcrypt.compare(password, user?.password);
     if (!isMatched) {
-      throw new Error("Invalid login Credentials");
+        throw new Error("Invalid login Credentials");
     }
-  }
+    
+    // Code that follows the throw statement
   // update the last login
 
   user.lastLogin = new Date();
@@ -289,7 +291,7 @@ exports.forgotPassword= expressAsyncHandler(async (req,res)=>{
 })
 
 //  @desc Reset Password
-// @route PUT /api/v1/users/reset-password/:token
+// @route post /api/v1/users/reset-password/:token
 // @access Public
  exports.resetPassword = expressAsyncHandler(async(req,res)=>{
   // Get the id/token form email/params
@@ -322,6 +324,69 @@ exports.forgotPassword= expressAsyncHandler(async (req,res)=>{
    })
    
 });
+ 
+//  @desc  account verification
+// @route post /api/v1/users/verify-acc/:token
+// @access private
+exports.accountVerificationEmail = expressAsyncHandler(async (req,res)=> {
+  const user = await User.findById(req?.userAuth._id);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  // send the token
+const token = await user.generateaccountVerificationToken();
+// resave the user
+await user.save();
+// send the email
+SendAccVerificationEmail(user.email,token);
+ // return a success response
+res.status(200).json  ({
+message:'A verification mail has been sent to your Email ' + user.email+ ' Please ,click on the provided link to verify your account ',
+})
+});
+
+//  @desc verify token
+// @route post /api/v1/users/verify-account/:verify-token
+// @access private
+
+exports.verifyAccount = expressAsyncHandler(async(req,res)=>{
+  // Get the id/token form email/params
+  const {verifyToken} = req.params;
+  
+  // convert the token to actual token that has been saved in the DB
+   const crypotToken = crypto
+   .createHash("sha256")
+   .update(verifyToken)
+   .digest("hex");
+   // find the user by the crypto token
+   const userFound = await User.findOne({
+    accountVerificationToken:crypotToken,
+    accountVerificationExpires:{$gt : Date.now()}
+   });
+   if(!userFound){
+     throw new Error("Invalid or expired  account verification Token");
+   }
+   // update the user account
+   userFound.isVerified =  true;
+   // emptying the verify-  Token and exry date
+   userFound.accountVerificationToken=undefined;
+   userFound.accountVerificationExpires=undefined;
+   // resave the user
+   await  userFound.save();
+   // return a success response
+   res.status(200).json({
+    message:"Account Verified succesfully"
+   })
+   
+});
+ 
+
+
+
+
+
+
+
 
 
 
