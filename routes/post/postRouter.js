@@ -7,6 +7,9 @@ const {
   getPost,
   deletePost,
   updatePost,
+  likePost,
+  dislikePost
+  
 } = require("../../controllers/post/postCtrl");
 const checkAccVerification = require("../../middlewares/isAccVerified");
 
@@ -26,5 +29,12 @@ postRouter.delete("/:id", isLoggedin, deletePost);
 
 // update
 postRouter.put("/:id", isLoggedin, updatePost);
+// Like post
+postRouter.put("/likes/:id", isLoggedin, likePost);
+
+//Dislike post
+postRouter.put("/dislikes/:id", isLoggedin, dislikePost);
+
+
 
 module.exports = postRouter;

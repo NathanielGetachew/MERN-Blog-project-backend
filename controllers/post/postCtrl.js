@@ -2,6 +2,7 @@ const asynchandler = require("express-async-handler");
 const Category = require("../../model/Categories/Category");
 const Post = require("../../model/Post/Post");
 const User = require("../../model/User/User");
+const expressAsyncHandler = require("express-async-handler");
 //@desc Create a post
 // @route Post /api/v1/posts
 //@access private
@@ -96,4 +97,73 @@ exports.updatePost = asynchandler(async (req, res) => {
     message: "Post Updated  Successfully",
     post,
   });
+});
+
+// desc liking a  post
+// route PUT api/v1/post/Likes/:id
+//@ access private
+
+exports.likePost = expressAsyncHandler(async(req,res)=>{
+  // Get the id of the post
+  const {id} = req.params;
+  // get the login user
+  const userId = req.userAuth._id;
+  // find the post
+  const post = await Post.findById(id);
+  if(!post){
+    throw new Error("Post not found!");
+
+  }
+  // // check if the user has already liked the post
+  // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
+  // if(userHasLiked){
+  //   throw new Error("User has already liked this post")
+  // }
+  // push the user into the post likes, letting MnogoDB handles the duplication issue
+  await Post.findByIdAndUpdate(id,{
+    $addToSet:{likes:userId},
+  },
+  {new:true}
+  );
+  // remove the user from the dislikes  array if present
+  post.dislikes = post.dislikes.filter((dislike)=>dislike.toString()!== userId.toString());
+  await post.save();
+ res.status(200).json({
+  message:"Post liked succesfully"
+ }); 
+});
+
+// desc disliking a  post
+// route PUT api/v1/post/dislikes/:id
+//@ access private
+
+exports.dislikePost = expressAsyncHandler(async(req,res)=>{
+  // Get the id of the post
+  const {id} = req.params;
+  // get the login user
+  const userId = req.userAuth._id;
+  // find the post
+  const post = await Post.findById(id);
+  if(!post){
+    throw new Error("Post not found!");
+
+  }
+  // // check if the user has already liked the post
+  // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
+  // if(userHasLiked){
+  //   throw new Error("User has already liked this post")
+  // }
+  // push the user into the post likes, letting MnogoDB handles the duplication issue
+  await Post.findByIdAndUpdate(id,{
+    $addToSet:{dislikes:userId},
+  },
+  {new:true}
+  );
+  // remove the user from the likes  array if present
+  post.likes = post.likes.filter((like)=>like.toString()!== userId.toString());
+  // resave the post
+  await post.save();
+ res.status(200).json({
+  message:"Post disliked succesfully"
+ }); 
 });
