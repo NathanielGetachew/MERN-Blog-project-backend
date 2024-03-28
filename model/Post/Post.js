@@ -36,6 +36,10 @@ const postSchema = new mongoose.Schema(
       required: true,
       ref: "Categories",
     },
+    scheduledPublished: {
+      type: Date,
+      default: null,
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -48,10 +52,12 @@ const postSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    comments: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Comment',
-    }],
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
   },
   {
     timestamps: true,

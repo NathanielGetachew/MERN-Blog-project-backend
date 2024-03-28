@@ -15,7 +15,7 @@ exports.createPost = asynchandler(async (req, res) => {
   if (postFound) {
     throw new Error("Post already exists");
   }
-// check if the user account is verified
+  // check if the user account is verified
 
   // create the post
 
@@ -103,16 +103,15 @@ exports.updatePost = asynchandler(async (req, res) => {
 // route PUT api/v1/post/Likes/:id
 //@ access private
 
-exports.likePost = expressAsyncHandler(async(req,res)=>{
+exports.likePost = expressAsyncHandler(async (req, res) => {
   // Get the id of the post
-  const {id} = req.params;
+  const { id } = req.params;
   // get the login user
   const userId = req.userAuth._id;
   // find the post
   const post = await Post.findById(id);
-  if(!post){
+  if (!post) {
     throw new Error("Post not found!");
-
   }
   // // check if the user has already liked the post
   // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
@@ -120,33 +119,36 @@ exports.likePost = expressAsyncHandler(async(req,res)=>{
   //   throw new Error("User has already liked this post")
   // }
   // push the user into the post likes, letting MnogoDB handles the duplication issue
-  await Post.findByIdAndUpdate(id,{
-    $addToSet:{likes:userId},
-  },
-  {new:true}
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $addToSet: { likes: userId },
+    },
+    { new: true }
   );
   // remove the user from the dislikes  array if present
-  post.dislikes = post.dislikes.filter((dislike)=>dislike.toString()!== userId.toString());
+  post.dislikes = post.dislikes.filter(
+    (dislike) => dislike.toString() !== userId.toString()
+  );
   await post.save();
- res.status(200).json({
-  message:"Post liked succesfully"
- }); 
+  res.status(200).json({
+    message: "Post liked succesfully",
+  });
 });
 
 // desc disliking a  post
 // route PUT api/v1/post/dislikes/:id
 //@ access private
 
-exports.dislikePost = expressAsyncHandler(async(req,res)=>{
+exports.dislikePost = expressAsyncHandler(async (req, res) => {
   // Get the id of the post
-  const {id} = req.params;
+  const { id } = req.params;
   // get the login user
   const userId = req.userAuth._id;
   // find the post
   const post = await Post.findById(id);
-  if(!post){
+  if (!post) {
     throw new Error("Post not found!");
-
   }
   // // check if the user has already liked the post
   // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
@@ -154,16 +156,79 @@ exports.dislikePost = expressAsyncHandler(async(req,res)=>{
   //   throw new Error("User has already liked this post")
   // }
   // push the user into the post likes, letting MnogoDB handles the duplication issue
-  await Post.findByIdAndUpdate(id,{
-    $addToSet:{dislikes:userId},
-  },
-  {new:true}
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $addToSet: { dislikes: userId },
+    },
+    { new: true }
   );
   // remove the user from the likes  array if present
-  post.likes = post.likes.filter((like)=>like.toString()!== userId.toString());
+  post.likes = post.likes.filter(
+    (like) => like.toString() !== userId.toString()
+  );
   // resave the post
   await post.save();
- res.status(200).json({
-  message:"Post disliked succesfully"
- }); 
+  res.status(200).json({
+    message: "Post disliked succesfully",
+  });
+});
+
+// desc clapping a  post
+// route PUT api/v1/post/claps/:id
+//@ access private
+
+exports.claps = expressAsyncHandler(async (req, res) => {
+  // ge the id of the post
+  const { id } = req.params;
+  // find the post
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("post not found!");
+  }
+  // implement the claps
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $inc: { claps: 1 },
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json({
+    message: "The post was clapped successfully",
+    post,
+  });
+});
+
+// desc scheduling a  post
+// route PUT api/v1/post/schedule/:id
+//@ access private
+exports.schedule = expressAsyncHandler(async (req, res) => {
+  // get the payload
+  const { scheduledPublish } = req.body;
+  const { id } = req.params;
+  if (!id) {
+    throw new Error("post Id and schedule date are required");
+  }
+  // find the post
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("post not found");
+  }
+  // check if th user is the author of the post
+  if(post.author.toString()!==req.userAuth._id.toString()){
+    throw new Error("You can only schedule your own post");
+  }
+  // check if the schedulepulbish date is in the past
+  const scheduleDate = new Date(scheduledPublish);
+  const currentDate = new Date();
+  if(scheduleDate < currentDate){
+    throw new Error("the scheduled pulbish date can't be in the past");
+  }
+  // update the Post
+  post.scheduledPublished=scheduledPublish;
+  await post.save();
+  res.status(200).json({message:"Post scheduled Succesfully",post});
 });
