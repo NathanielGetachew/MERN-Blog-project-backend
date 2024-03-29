@@ -1,5 +1,5 @@
 const User = require("../../model/User/User");
-const crypto = require("crypto")
+const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const asynchandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
@@ -12,8 +12,6 @@ const SendAccVerificationEmail = require("../../utils/SendAccVerificationEmail")
 //@access Public
 
 exports.register = asynchandler(async (req, res) => {
-  
-
   //get the details
   const { username, password, email } = req.body;
   // check if the user exists already
@@ -56,13 +54,13 @@ exports.login = asynchandler(async (req, res) => {
   if (!user) {
     throw new Error("Invalid login Credentials");
   }
-    // compare the hashed password with the one the  user entered
-    const isMatched = await bcrypt.compare(password, user?.password);
-    if (!isMatched) {
-        throw new Error("Invalid login Credentials");
-    }
-    
-    // Code that follows the throw statement
+  // compare the hashed password with the one the  user entered
+  const isMatched = await bcrypt.compare(password, user?.password);
+  if (!isMatched) {
+    throw new Error("Invalid login Credentials");
+  }
+
+  // Code that follows the throw statement
   // update the last login
 
   user.lastLogin = new Date();
@@ -83,8 +81,28 @@ exports.login = asynchandler(async (req, res) => {
 exports.getProfile = asynchandler(async (req, res, next) => {
   // trigger custom error
 
-  const id = req.userAuth._id;
-  const user = await User.findById(id);
+  const id = req.userAuth?._id;
+  const user = await User.findById(id)
+    .populate({
+      path: "posts",
+      model: "Post",
+    })
+    .populate({
+      path: "following",
+      model: "User",
+    })
+    .populate({
+      path: "followers",
+      model: "User",
+    })
+    .populate({
+      path: "blockedUsers",
+      model: "User",
+    })
+    .populate({
+      path: "profileViewers",
+      model: "User",
+    });
   res.json({
     status: "success",
     message: "Profile fetched",
@@ -123,6 +141,7 @@ exports.blockUser = asynchandler(async (req, res) => {
   res.json({
     message: "user Blocked Succesfully",
     status: "successs",
+    currentUser,
   });
 });
 
@@ -195,201 +214,192 @@ exports.ProfileViewers = asynchandler(async (req, res) => {
 //@route POST /api/v1/users/Following/:userIdToFollow
 //@access private
 
-exports.followingUser = asynchandler(async(req,res)=>{
+exports.followingUser = asynchandler(async (req, res) => {
   // find the current user
   const currentUserId = req.userAuth._id;
   // the Id of the user to be Followed
-  const  userIdToFollow = req.params.userIdToFollow;
+  const userIdToFollow = req.params.userIdToFollow;
   // avoid user following him/herself
-  if(currentUserId.toString()===userIdToFollow.toString()){
+  if (currentUserId.toString() === userIdToFollow.toString()) {
     throw new Error("you can't follow yourself");
   }
   // push the userIdToFollow into the current user following field
-  const currentUserUpdate = await User.findByIdAndUpdate(currentUserId,{
-    $addToSet:{following : userIdToFollow},
-     },
-     {
+  const currentUserUpdate = await User.findByIdAndUpdate(
+    currentUserId,
+    {
+      $addToSet: { following: userIdToFollow },
+    },
+    {
       new: true,
     }
-     );
+  );
   // push the currentuserId into the  user to be followed followers field
-  const UserTobeFollowed = await User.findByIdAndUpdate(userIdToFollow,{
-    $addToSet:{followers : currentUserId}
-  },
-  {
-    new: true,
-  }
+  const UserTobeFollowed = await User.findByIdAndUpdate(
+    userIdToFollow,
+    {
+      $addToSet: { followers: currentUserId },
+    },
+    {
+      new: true,
+    }
   );
   res.json({
-    status:"Success",
-    message: "you followed a user succesfully"
-
-  })
-
-})
+    status: "Success",
+    message: "you followed a user succesfully",
+  });
+});
 
 //@des UnFollowing User
 //@route POST /api/v1/users/UnFollowing/:userIdToUnFollow
 //@access private
 
-exports.UnfollowingUser = asynchandler(async(req,res)=>{
+exports.UnfollowingUser = asynchandler(async (req, res) => {
   // find the current user
   const currentUserId = req.userAuth._id;
   // the Id of the user to be Followed
-  const  userIdToUnFollow = req.params.userIdToUnFollow;
+  const userIdToUnFollow = req.params.userIdToUnFollow;
   // avoid user following him/herself
-  if(currentUserId.toString()===userIdToUnFollow.toString()){
+  if (currentUserId.toString() === userIdToUnFollow.toString()) {
     throw new Error("you can't follow yourself");
   }
   // Pull(remove) the userIdToUnFollow into the current user following field
-  const currentUserUpdate = await User.findByIdAndUpdate(currentUserId,{
-    $pull:{following : userIdToUnFollow},
-     },
-     {
+  const currentUserUpdate = await User.findByIdAndUpdate(
+    currentUserId,
+    {
+      $pull: { following: userIdToUnFollow },
+    },
+    {
       new: true,
     }
-     );
+  );
   // Remove the currentuserId from the  user to unfollow followers field
-  const UserTobeFollowed = await User.findByIdAndUpdate(userIdToUnFollow,{
-    $pull:{followers : currentUserId}
-  },
-  {
-    new: true,
-  }
+  const UserTobeFollowed = await User.findByIdAndUpdate(
+    userIdToUnFollow,
+    {
+      $pull: { followers: currentUserId },
+    },
+    {
+      new: true,
+    }
   );
   res.json({
-    status:"Success",
-    message: "you Unfollowed a user succesfully"
+    status: "Success",
+    message: "you Unfollowed a user succesfully",
+  });
+});
 
-  })
-
-})
-
-//@des forgot password 
+//@des forgot password
 //@route POST /api/v1/users/forgot-password
 //@access public
 
-exports.forgotPassword= expressAsyncHandler(async (req,res)=>{
-  const {email} = req.body;
+exports.forgotPassword = expressAsyncHandler(async (req, res) => {
+  const { email } = req.body;
   // find the email in the db
-  const userFound = await User.findOne({email});
-  if( !userFound ) {
+  const userFound = await User.findOne({ email });
+  if (!userFound) {
     throw new Error("There's No Such Email in our System");
     // Generate the token
   }
-    const resetToken  =await userFound.generatePasswordResetToken();
+  const resetToken = await userFound.generatePasswordResetToken();
 
-    // resave the user
-    await userFound.save();
+  // resave the user
+  await userFound.save();
 
-    // send Email
-    sendEmail(email ,resetToken);
-    res.status(200).json({
-      message:"password reset email sent",resetToken
-    });
-  
-})
+  // send Email
+  sendEmail(email, resetToken);
+  res.status(200).json({
+    message: "password reset email sent",
+    resetToken,
+  });
+});
 
 //  @desc Reset Password
 // @route post /api/v1/users/reset-password/:token
 // @access Public
- exports.resetPassword = expressAsyncHandler(async(req,res)=>{
+exports.resetPassword = expressAsyncHandler(async (req, res) => {
   // Get the id/token form email/params
-  const {resetToken} = req.params;
-  const {password} = req.body;
+  const { resetToken } = req.params;
+  const { password } = req.body;
   // convert the token to actual token that has been saved in the DB
-   const crypotToken = crypto
-   .createHash("sha256")
-   .update(resetToken)
-   .digest("hex");
-   // find the user by the crypto token
-   const userFound = await User.findOne({
-    passwordResetToken:crypotToken,
-    passwordResetExpires:{$gt : Date.now()}
-   });
-   if(!userFound){
-     throw new Error("Invalid or expired password reset Token");
-   }
-   // update the user password
-   const salt = await bcrypt.genSalt(10);
-   userFound.password = await bcrypt.hash(password,salt);
-   // emptying the resetToken and exry date
-   userFound.passwordResetToken=undefined;
-   userFound.passwordResetExpires=undefined;
-   // resave the user
-   await  userFound.save();
-   // return a success response
-   res.status(200).json({
-    message:"Password reset succesfully"
-   })
-   
+  const crypotToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  // find the user by the crypto token
+  const userFound = await User.findOne({
+    passwordResetToken: crypotToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!userFound) {
+    throw new Error("Invalid or expired password reset Token");
+  }
+  // update the user password
+  const salt = await bcrypt.genSalt(10);
+  userFound.password = await bcrypt.hash(password, salt);
+  // emptying the resetToken and exry date
+  userFound.passwordResetToken = undefined;
+  userFound.passwordResetExpires = undefined;
+  // resave the user
+  await userFound.save();
+  // return a success response
+  res.status(200).json({
+    message: "Password reset succesfully",
+  });
 });
- 
+
 //  @desc  account verification
 // @route post /api/v1/users/verify-acc/:token
 // @access private
-exports.accountVerificationEmail = expressAsyncHandler(async (req,res)=> {
+exports.accountVerificationEmail = expressAsyncHandler(async (req, res) => {
   const user = await User.findById(req?.userAuth._id);
   if (!user) {
-    throw new Error('User not found');
+    throw new Error("User not found");
   }
   // send the token
-const token = await user.generateaccountVerificationToken();
-// resave the user
-await user.save();
-// send the email
-SendAccVerificationEmail(user.email,token);
- // return a success response
-res.status(200).json  ({
-message:'A verification mail has been sent to your Email ' + user.email+ ' Please ,click on the provided link to verify your account ',
-})
+  const token = await user.generateaccountVerificationToken();
+  // resave the user
+  await user.save();
+  // send the email
+  SendAccVerificationEmail(user.email, token);
+  // return a success response
+  res.status(200).json({
+    message:
+      "A verification mail has been sent to your Email " +
+      user.email +
+      " Please ,click on the provided link to verify your account ",
+  });
 });
 
 //  @desc verify token
 // @route post /api/v1/users/verify-account/:verify-token
 // @access private
 
-exports.verifyAccount = expressAsyncHandler(async(req,res)=>{
+exports.verifyAccount = expressAsyncHandler(async (req, res) => {
   // Get the id/token form email/params
-  const {verifyToken} = req.params;
-  
+  const { verifyToken } = req.params;
+
   // convert the token to actual token that has been saved in the DB
-   const crypotToken = crypto
-   .createHash("sha256")
-   .update(verifyToken)
-   .digest("hex");
-   // find the user by the crypto token
-   const userFound = await User.findOne({
-    accountVerificationToken:crypotToken,
-    accountVerificationExpires:{$gt : Date.now()}
-   });
-   if(!userFound){
-     throw new Error("Invalid or expired  account verification Token");
-   }
-   // update the user account
-   userFound.isVerified =  true;
-   // emptying the verify-  Token and exry date
-   userFound.accountVerificationToken=undefined;
-   userFound.accountVerificationExpires=undefined;
-   // resave the user
-   await  userFound.save();
-   // return a success response
-   res.status(200).json({
-    message:"Account Verified succesfully"
-   })
-   
+  const crypotToken = crypto
+    .createHash("sha256")
+    .update(verifyToken)
+    .digest("hex");
+  // find the user by the crypto token
+  const userFound = await User.findOne({
+    accountVerificationToken: crypotToken,
+    accountVerificationExpires: { $gt: Date.now() },
+  });
+  if (!userFound) {
+    throw new Error("Invalid or expired  account verification Token");
+  }
+  // update the user account
+  userFound.isVerified = true;
+  // emptying the verify-  Token and exry date
+  userFound.accountVerificationToken = undefined;
+  userFound.accountVerificationExpires = undefined;
+  // resave the user
+  await userFound.save();
+  // return a success response
+  res.status(200).json({
+    message: "Account Verified succesfully",
+  });
 });
- 
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -23,7 +23,7 @@ postRouter.post("/", isLoggedin, checkAccVerification, createPost);
 postRouter.get("/:id", getPost);
 
 //  get all
-postRouter.get("/", getPosts);
+postRouter.get("/", isLoggedin,getPosts);
 
 // delete
 postRouter.delete("/:id", isLoggedin, deletePost);

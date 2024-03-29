@@ -27,7 +27,11 @@ exports.createCategory = asynchandler(async (req, res) => {
 // @route GET /api/v1/categories
 // @access Public
 exports.getCategories = asynchandler(async (req, res) => {
-  const categories = await Category.find({});
+  const categories = await Category.find({}).populate({
+    path:"posts",
+    model:"Post",
+
+  });
   res.status(201).json({
     status: "success",
     message: "Categories Fetched Successfuly",
