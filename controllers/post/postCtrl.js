@@ -8,6 +8,8 @@ const expressAsyncHandler = require("express-async-handler");
 //@access private
 
 exports.createPost = asynchandler(async (req, res) => {
+  
+
   // Get the payload
   const { title, content, categoryId } = req.body;
   // check if pos already exists
@@ -24,6 +26,7 @@ exports.createPost = asynchandler(async (req, res) => {
     content,
     category: categoryId,
     author: req?.userAuth?._id,
+    image:req?.file?.path,
   });
 
   // Associate a post to a user
@@ -43,41 +46,36 @@ exports.createPost = asynchandler(async (req, res) => {
   res.json({ status: "Success", message: "Post Created Successfully", post });
 });
 
-// @desc Get all posts
-// @route GET /api/v1/posts
-// @access private
+// // @desc Get all posts
+// // @route GET /api/v1/posts
+// // @access private
 exports.getPosts = asynchandler(async (req, res) => {
   // find all the users who have blocked the logged-in user
-  const loggedUserId =  req.userAuth?._id;
-  const currentTime = new Date() 
+  const loggedUserId = req.userAuth?._id;
+  const currentTime = new Date();
   const usersBlokingLoggedInUser = await User.find({
     blockedUsers: loggedUserId,
   });
-  
+
   // extract the ids of the user who have blocked the login user
   const blockedUserIds = usersBlokingLoggedInUser?.map((user) => user._id);
   const query = {
-    author:{ $nin : blockedUserIds},
-    $or:[
-      {  scheduledPublished:{$lte:currentTime},
-         scheduledPublished:null,
-     },
+    author: { $nin: blockedUserIds },
+    $or: [
+      { scheduledPublished: { $lte: currentTime }, scheduledPublished: null },
     ],
   };
-  
-  const posts = await Post.find(query).populate({
-    path:	 "author",
-    model: "User",
-    select:"email role username"
-  });
 
-  
+  const posts = await Post.find(query).populate({
+    path: "author",
+    model: "User",
+    select: "email role username",
+  });
 
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
     posts,
-    
   });
 });
 

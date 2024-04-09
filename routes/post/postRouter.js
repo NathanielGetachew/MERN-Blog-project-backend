@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 
 const isLoggedin = require("../../middlewares/isLoggedin");
 const {
@@ -10,20 +11,23 @@ const {
   likePost,
   dislikePost,
   claps,
-  schedule
+  schedule,
 } = require("../../controllers/post/postCtrl");
 const checkAccVerification = require("../../middlewares/isAccVerified");
+const storage = require("../../utils/fileUpload");
 
 const postRouter = express.Router();
+// file upload middleware
+const upload = multer({ storage });
 
 // create
-postRouter.post("/", isLoggedin, checkAccVerification, createPost);
+postRouter.post("/",isLoggedin, upload.single("file"), createPost);
 
 // get
 postRouter.get("/:id", getPost);
 
 //  get all
-postRouter.get("/", isLoggedin,getPosts);
+postRouter.get("/", isLoggedin, getPosts);
 
 // delete
 postRouter.delete("/:id", isLoggedin, deletePost);
