@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-
+import {useDispatch} from "react-redux";
 import { Link } from "react-router-dom";
+import { loginAction } from "../Redux/Slices/Users/usersSlice";
 
 const Login = () => {
+// Dispatch Instance
+const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    password: "",
-    username: "",
+    password: "12345",
+    username: "Natty Gech",
   });
 
   //handle form change
@@ -16,7 +19,14 @@ const Login = () => {
   //handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    console.log(formData);
+  //! Dispatch the action
+  dispatch(
+    loginAction ({
+    username:formData.username,
+    password:formData.password,
+  })
+)
     // reset form
     setFormData({
       password: "",
