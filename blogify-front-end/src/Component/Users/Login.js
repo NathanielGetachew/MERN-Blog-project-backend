@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch,useSelector} from "react-redux";
 import { Link } from "react-router-dom";
-import { loginAction } from "../Redux/Slices/Users/usersSlice";
+import { loginAction } from "../HomePage/Redux/Slices/Users/usersSlice";
+import LoadingComponent from "../Alert/LoadingComponent";
+import ErrorMsg from "../Alert/ErrorMessage";
+import SuccessMsg from "../Alert/SuccessMsg";
 
 const Login = () => {
 // Dispatch Instance
@@ -34,6 +37,8 @@ const dispatch = useDispatch();
     });
   };
   //store data
+ const {userAuth,loading,error,success} = useSelector((state)=> state?.users)
+ console.log(success)
 
   return (
     <section className="py-16 xl:pb-56 bg-white overflow-hidden">
@@ -48,6 +53,10 @@ const dispatch = useDispatch();
           <p className="mb-12 font-medium text-lg text-gray-600 leading-normal">
             Enter your details below.
           </p>
+          {/* Display Error here */}
+          { error && <ErrorMsg message= {error?.message}/>}
+          {/* Display the success here */}
+          { success && <SuccessMsg message= "Logged in Successfully"/>}
           <form onSubmit={handleSubmit}>
             <label className="block mb-5">
               <input
@@ -72,12 +81,12 @@ const dispatch = useDispatch();
                 onChange={handleChange}
               />
             </label>
-            <button
+            {loading? (<LoadingComponent/>):(<button
               className="mb-8 py-4 px-9 w-full text-white font-semibold border border-indigo-700 rounded-xl shadow-4xl focus:ring focus:ring-indigo-300 bg-indigo-600 hover:bg-indigo-700 transition ease-in-out duration-200"
               type="submit"
             >
               Login Account
-            </button>
+            </button>) }
 
             <p className="font-medium">
               <span className="m-2">Forgot Password?</span>
