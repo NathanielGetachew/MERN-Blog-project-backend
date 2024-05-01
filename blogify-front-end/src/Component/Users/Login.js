@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {useDispatch,useSelector} from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginAction } from "../HomePage/Redux/Slices/Users/usersSlice";
 import LoadingComponent from "../Alert/LoadingComponent";
 import ErrorMsg from "../Alert/ErrorMessage";
 import SuccessMsg from "../Alert/SuccessMsg";
 
+
 const Login = () => {
-// Dispatch Instance
+  //! Navigation hook
+  const navigate = useNavigate();
+//! Dispatch Instance
 const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     password: "12345",
@@ -37,8 +40,14 @@ const dispatch = useDispatch();
     });
   };
   //store data
- const {userAuth,loading,error,success} = useSelector((state)=> state?.users)
- console.log(success)
+ const {userAuth,loading,error,success} = useSelector((state)=> state?.users);
+ //! Redirect
+ useEffect(()=>{
+   if(userAuth?.userInfo?.token){
+     navigate("/user-profile");
+   }},
+   [userAuth?.userInfo?.token]
+)
 
   return (
     <section className="py-16 xl:pb-56 bg-white overflow-hidden">
