@@ -39,6 +39,12 @@ export const loginAction = createAsyncThunk(
     }
   }
 );
+//! logout action
+export const logoutAction = createAsyncThunk("users/logout",async()=>{
+  // remove token from the localstorage
+  localStorage.removeItem("userInfo");
+  return true;
+})
 
 //! users Slices
 
