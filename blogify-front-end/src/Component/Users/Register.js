@@ -1,7 +1,18 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { registerAction } from "../HomePage/Redux/Slices/Users/usersSlice";
+import SuccessMsg from "../Alert/SuccessMsg";
+import ErrorMsg from "../Alert/ErrorMessage";
+import LoadingComponent from "../Alert/LoadingComponent";
+
+
 
 const Register = () => {
+  //! Navigation hook
+  const navigate = useNavigate();
+  //! Dispatch Instance
+const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -16,6 +27,16 @@ const Register = () => {
   //handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(formData)
+  
+  //! Dispatch the action
+  dispatch(
+    registerAction ({
+    username:formData.username,
+    password:formData.password,
+    email:formData.email,
+  })
+  );
     // reset form
     setFormData({
       email: "",
@@ -24,8 +45,19 @@ const Register = () => {
     });
   };
 
+    //store data
+ const {user,error,success,loading} = useSelector((state)=> state?.users);
+
+  //! Redirect
+ useEffect(()=>{
+  if(user?.status==="successful"){
+    navigate("/login");
+  }},
+  [user?.status]
+)
+
   return (
-    <form className="w-full lg:w-1/2">
+    <form onSubmit={handleSubmit} className="w-full lg:w-1/2">
       <div className="flex flex-col items-center p-10 xl:px-24 xl:pb-12 bg-white lg:max-w-xl lg:ml-auto rounded-4xl shadow-2xl">
         <img
           className="relative -top-2 -mt-16 mb-6 h-16"
@@ -35,6 +67,10 @@ const Register = () => {
         <h2 className="mb-4 text-2xl md:text-3xl text-coolGray-900 font-bold text-center">
           Join our community
         </h2>
+         {/* Display Error here */}
+         { error && <ErrorMsg message= {error?.message}/>}
+          {/* Display the success here */}
+          { success && <SuccessMsg message= "Registered in Successfully"/>}
         <h3 className="mb-7 text-base md:text-lg text-coolGray-500 font-medium text-center">
           Lorem ipsum dolor sit amet, consectetur adipisng.
         </h3>
@@ -71,12 +107,15 @@ const Register = () => {
             name="password"
           />
         </label>
+        {loading? (<LoadingComponent/>):(
         <button
           className="mb-4 inline-block py-3 px-7 w-full leading-6 text-green-50 font-medium text-center bg-green-500 hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 rounded-md"
           type="submit"
         >
           Get Started
         </button>
+        )}
+       
         {/* <div className="flex items-center mb-4 w-full text-xs text-coolGray-400">
           <div className="flex-1 h-px bg-coolGray-100" />
           <span className="px-2 font-medium">OR</span>

@@ -24,7 +24,7 @@ exports.register = asynchandler(async (req, res) => {
     username,
     email,
     password,
-    profilePicture:req?.file?.path,
+    
   });
   // hash the password
   const salt = await bcrypt.genSalt(10);

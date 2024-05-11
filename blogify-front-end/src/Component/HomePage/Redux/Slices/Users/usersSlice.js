@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { resetErrorAction, resetSuccessAction } from "../Global/globalSlice";
+
+
+
 
 // intitialize
 const INTITIAL_STATE = {
   loading: false,
   error: null,
   users: [],
-  users: null,
+  user: null,
   success:false,
-  isUpdated: false,
-  isDeleted: false,
-  isEmailSent: false,
-  isPasswordReset: false,
   profile: {},
   userAuth: {
     error: null,
@@ -20,6 +20,24 @@ const INTITIAL_STATE = {
       : null,
   },
 };
+//! Register user Action
+export const registerAction = createAsyncThunk(
+  "users/register",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const { data } = await axios.post(
+        "http://localhost:9080/api/v1/users/register",
+        payload
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 //! login Action
 export const loginAction = createAsyncThunk(
   "users/login",
@@ -68,6 +86,33 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+    //Rgister
+    builder.addCase(registerAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(registerAction.fulfilled, (state, action) => {
+      state.user = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(registerAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+    //! Reset Error Action
+    builder.addCase(resetErrorAction.fulfilled,(state)=>{
+      state.error=null;
+    })
+
+    //! Reset Success Action
+    builder.addCase(resetSuccessAction.fulfilled,(state)=>{
+      state.success=false;
+    })
+
   },
 });
 

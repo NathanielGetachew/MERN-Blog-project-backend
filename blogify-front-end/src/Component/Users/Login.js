@@ -25,7 +25,7 @@ const dispatch = useDispatch();
   //handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    
   //! Dispatch the action
   dispatch(
     loginAction ({
