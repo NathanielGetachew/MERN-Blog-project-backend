@@ -8,8 +8,6 @@ const expressAsyncHandler = require("express-async-handler");
 //@access private
 
 exports.createPost = asynchandler(async (req, res) => {
-  
-
   // Get the payload
   const { title, content, categoryId } = req.body;
   // check if pos already exists
@@ -26,7 +24,7 @@ exports.createPost = asynchandler(async (req, res) => {
     content,
     category: categoryId,
     author: req?.userAuth?._id,
-    image:req?.file?.path,
+    image: req?.file?.path,
   });
 
   // Associate a post to a user
@@ -94,7 +92,7 @@ exports.getPost = asynchandler(async (req, res) => {
 // @desc Get only 4 post
 // @route GET /api/v1/posts:id
 // @access Public
-exports.getPulicPosts = asynchandler(async (res, req) => {
+exports.getPublicPosts = asynchandler(async (res, req) => {
   const posts = await Post.find({}).sort({ createdAt: -1 }).limit(4);
   res.status(200).json({
     status: "Success",

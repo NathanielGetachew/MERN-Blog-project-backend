@@ -6,6 +6,7 @@ import UserProfile from "./Component/Users/UserProfile"
 import PublicNavBar from "./Component/Navbar/PublicNavBar"
 import PrivateNavbar from "./Component/Navbar/PrivateNavbar"
 import ProtectedRoute from "./AuthRoute/protectedRoute"
+import PublicPosts from "./Component/Posts/PublicPosts"
 
 
 
@@ -23,6 +24,7 @@ export default function App() {
 <Routes>
   <Route path ="" element={<Homepage/>}></Route>
     <Route path ="/login" element={<Login/>}></Route>
+    
     {/* profile */}
     <Route path ="/user-profile" element={<ProtectedRoute>
      <UserProfile/>

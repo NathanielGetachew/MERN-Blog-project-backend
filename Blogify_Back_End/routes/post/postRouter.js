@@ -12,9 +12,11 @@ const {
   dislikePost,
   claps,
   schedule,
+  getPublicPosts,
 } = require("../../controllers/post/postCtrl");
 const checkAccVerification = require("../../middlewares/isAccVerified");
 const storage = require("../../utils/fileUpload");
+
 
 const postRouter = express.Router();
 // file upload middleware
@@ -28,6 +30,9 @@ postRouter.get("/:id", getPost);
 
 //  get all
 postRouter.get("/", isLoggedin, getPosts);
+
+// get public posts
+ postRouter.get("/public", getPublicPosts);
 
 // delete
 postRouter.delete("/:id", isLoggedin, deletePost);
