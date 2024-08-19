@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+
+//schema
 const postSchema = new mongoose.Schema(
   {
     title: {
@@ -7,11 +9,10 @@ const postSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required:true,
+      required: true,
     },
     claps: {
       type: Number,
-      required: true,
       default: 0,
     },
     content: {
@@ -27,25 +28,31 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    postViews: {
-      type: Number,
-      default: 0,
-    },
+
+    postViews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
     category: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref: "Categories",
+      ref: "Category",
     },
-    scheduledPublished: {
+    shedduledPublished: {
       type: Date,
       default: null,
     },
+
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
+
     dislikes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -58,18 +65,24 @@ const postSchema = new mongoose.Schema(
         ref: "Comment",
       },
     ],
+    isPublic: {
+      type: Boolean,
+      default: true, // Or set to false if you want posts to be private by default
+    },
   },
   {
     timestamps: true,
-    toJSON:{
-      virtuals:true,
+    toJSON: {
+      virtuals: true,
     },
-    toObject:{
-      virtuals:true,
-    }
+    toObject: {
+      virtuals: true,
+    },
   }
 );
-// compile schema to model
+
+//compile schema to  model
 
 const Post = mongoose.model("Post", postSchema);
+
 module.exports = Post;

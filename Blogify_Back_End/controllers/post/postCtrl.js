@@ -90,13 +90,18 @@ exports.getPost = asynchandler(async (req, res) => {
 });
 
 // @desc Get only 4 post
-// @route GET /api/v1/posts:id
+// @route GET /api/v1/posts/public
 // @access Public
-exports.getPublicPosts = asynchandler(async (res, req) => {
-  const posts = await Post.find({}).sort({ createdAt: -1 }).limit(4);
-  res.status(200).json({
-    status: "Success",
-    message: "Posts fetched Succesfully",
+
+exports.getPublicPosts = asynchandler(async (req, res) => {
+  const posts = await Post.find({ isPublic: true })
+    .sort({ createdAt: -1 })
+    .limit(2)
+    .populate("category");
+
+  res.status(201).json({
+    status: "success",
+    message: "Posts successfully fetched",
     posts,
   });
 });

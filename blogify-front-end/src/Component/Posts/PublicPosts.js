@@ -1,6 +1,20 @@
 import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchPublicPostsAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
 
 const PublicPosts = () => {
+  // //! redux store
+  const dispatch = useDispatch();
+  const { posts, error, loading, success } = useSelector(
+    (state) => state?.posts
+  );
+
+  const { userAuth } = useSelector((state) => state?.users);
+  // dispatch
+  useEffect(() => {
+    dispatch(fetchPublicPostsAction());
+  }, [dispatch]);
+  console.log(posts);
   return (
     <>
       <div>

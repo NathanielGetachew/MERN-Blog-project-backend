@@ -7,6 +7,7 @@ import PublicNavBar from "./Component/Navbar/PublicNavBar"
 import PrivateNavbar from "./Component/Navbar/PrivateNavbar"
 import ProtectedRoute from "./AuthRoute/protectedRoute"
 import PublicPosts from "./Component/Posts/PublicPosts"
+import AddPost from "./Component/Posts/AddPost"
 
 
 
@@ -29,13 +30,18 @@ export default function App() {
     <Route path ="/user-profile" element={<ProtectedRoute>
      <UserProfile/>
      </ProtectedRoute>}>
+     </Route>
 
-    </Route>
-
-
+     {/* Add Post */}
+    <Route path ="/Add-Post" element={<ProtectedRoute>
+     <AddPost />
+     </ProtectedRoute>}>
+     </Route>
 
     
-  </Routes>
+
+
+</Routes>
 </BrowserRouter>
   )
 }
