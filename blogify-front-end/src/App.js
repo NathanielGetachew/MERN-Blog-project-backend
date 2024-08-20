@@ -8,6 +8,7 @@ import PrivateNavbar from "./Component/Navbar/PrivateNavbar"
 import ProtectedRoute from "./AuthRoute/protectedRoute"
 import PublicPosts from "./Component/Posts/PublicPosts"
 import AddPost from "./Component/Posts/AddPost"
+import PostDetails from "./Component/Posts/PostDetails"
 
 
 
@@ -35,6 +36,12 @@ export default function App() {
      {/* Add Post */}
     <Route path ="/Add-Post" element={<ProtectedRoute>
      <AddPost />
+     </ProtectedRoute>}>
+     </Route>
+
+     {/*  Post details */}
+    <Route path ="/posts/:postId" element={<ProtectedRoute>
+     <PostDetails/>
      </ProtectedRoute>}>
      </Route>
 

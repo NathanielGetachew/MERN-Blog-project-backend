@@ -19,7 +19,7 @@ export const fetchPublicPostsAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.get(
-        "http://localhost:9080/api/v1/posts/pubic"
+        "http://localhost:9080/api/v1/posts/home/public"
       );
 
       return data;

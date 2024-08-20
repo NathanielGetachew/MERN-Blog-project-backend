@@ -32,7 +32,7 @@ postRouter.get("/:id", getPost);
 postRouter.get("/", isLoggedin, getPosts);
 
 // get public posts
- postRouter.get("/public", getPublicPosts);
+ postRouter.get("/home/public", getPublicPosts);
 
 // delete
 postRouter.delete("/:id", isLoggedin, deletePost);
