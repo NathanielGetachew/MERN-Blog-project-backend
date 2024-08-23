@@ -81,8 +81,7 @@ const PublicPosts = () => {
                         {post?.title}
                       </a>
                       <p className="mb-4 text-coolGray-500">
-                        {" "}
-                        {/* {truncatePost(post?.content)} */}
+                        {(post?.content)}
                       </p>
                       <Link
                         className="inline-flex items-center text-base md:text-lg text-green-500 hover:text-green-600 font-semibold"

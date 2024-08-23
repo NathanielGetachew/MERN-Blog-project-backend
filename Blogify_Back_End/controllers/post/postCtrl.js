@@ -81,7 +81,7 @@ exports.getPosts = asynchandler(async (req, res) => {
 // @route GET /api/v1/posts:id
 // @access Public
 exports.getPost = asynchandler(async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findById(req.params.id).populate("author").populate("category");
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
@@ -96,7 +96,7 @@ exports.getPost = asynchandler(async (req, res) => {
 exports.getPublicPosts = asynchandler(async (req, res) => {
   const posts = await Post.find({ isPublic: true })
     .sort({ createdAt: -1 })
-    .limit(2)
+    .limit(4)
     .populate("category");
 
   res.status(201).json({

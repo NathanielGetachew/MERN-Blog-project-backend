@@ -1,8 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { getPostAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+import LoadingComponent from "../Alert/LoadingComponent";
+import ErrorMsg from "../Alert/ErrorMessage";
+import PostStats from "./PostStats";
+import calculateReadingtime from "../../utils/calculateReadingTime";
 
 const PostDetails = () => {
+// //! redux store
+const dispatch = useDispatch();
+const { posts, error, loading, success } = useSelector(
+  (state) => state?.posts
+);
+
+const { userAuth } = useSelector((state) => state?.users);
+//! get Params
+const {postId} = useParams()
+// dispatch
+useEffect(() => {
+  dispatch(getPostAction(postId));
+}, [dispatch]);
+
+
   return (
-    <section
+    <>
+      {loading ? <LoadingComponent/>:      error ? <ErrorMsg message ={error?.message}/>: 
+      <section
       className="py-16 bg-white md:py-24"
       style={{
         backgroundImage: 'url("flex-ui-assets/elements/pattern-white.svg")',
@@ -13,32 +37,32 @@ const PostDetails = () => {
       <div className="container px-4 mx-auto">
         <div className="mx-auto mb-12 text-center md:max-w-2xl">
           <div className="inline-block px-3 py-1 mb-6 text-xs font-medium leading-5 text-green-500 uppercase bg-green-100 rounded-full shadow-sm">
-            Technology
+            {posts?.post?.category?.name}
           </div>
           <div className="flex items-center justify-center">
-            <p className="inline-block font-medium text-green-500">John Doe</p>
+            <p className="inline-block font-medium text-green-500">{posts?.post?.author?.username}</p>
             <span className="mx-1 text-green-500">•</span>
             <p className="inline-block font-medium text-green-500">
-              19 Jan 2022
+            {posts?.post?.createdAt}
             </p>
           </div>
           <h2 className="mb-4 text-3xl font-bold leading-tight tracking-tighter md:text-5xl text-darkCoolGray-900">
-            Lorem ipsum dolor sit amet
+           {posts?.post?.title}
           </h2>
           <p className="mb-10 text-lg font-medium md:text-xl text-coolGray-500">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            
           </p>
           <div className="flex items-center justify-center -mx-2 text-left">
             <div className="w-auto px-2">
               <img
                 className="w-12 h-12 rounded-full"
-                src="https://cdn.pixabay.com/photo/2015/01/08/18/29/entrepreneur-593358_1280.jpg"
-                alt
+                src={posts?.post?.image}
+                alt="post image"
               />
             </div>
             <div className="w-auto px-2">
               <h4 className="text-base font-bold md:text-lg text-coolGray-800">
-                John Doe
+              {posts?.post?.category?.name}
               </h4>
               <p className="text-base md:text-lg text-coolGray-500">
                 12 October 2021
@@ -49,8 +73,8 @@ const PostDetails = () => {
       </div>
       <img
         className="w-full mx-auto mb-4 mb-10"
-        src="https://cdn.pixabay.com/photo/2023/02/21/20/37/dandelion-7805073_960_720.jpg"
-        alt
+        src={posts?.post?.image}
+                alt="post image"
       />
 
       <div
@@ -62,15 +86,20 @@ const PostDetails = () => {
         }}
       >
         {/* Posts stats */}
+        
+        <PostStats
+        postViews = {posts?.Post?.postViews.length}
+        likes = {posts?.post?.likes.length}
+        dislikes = {posts?.Post?.dislikes.length}  
+        totalComments = {posts?.Post?.comment?.length}
+        createdAt={posts?.post?.createdAt}
+        readingTime={calculateReadingtime(posts?.post?.content)}
+        />
       </div>
       <div className="container px-4 mx-auto">
         <div className="mx-auto md:max-w-3xl">
           <p className="pb-10 mb-8 text-lg font-medium border-b md:text-xl text-coolGray-500 border-coolGray-100">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-            ullamcorper mattis lorem non. Ultrices praesent amet ipsum justo
-            massa. Eu dolor aliquet risus gravida nunc at feugiat consequat
-            purus. Non massa enim vitae duis mattis. Vel in ultricies vel
-            fringilla.
+            {posts?.post?.content}
           </p>
           <div className="flex justify-end mb-4">
             <button className="p-2 mr-2 text-gray-500 hover:text-gray-700">
@@ -113,7 +142,9 @@ const PostDetails = () => {
           {/* Comment form */}
         </div>
       </div>
-    </section>
+    </section> }
+    </>
+    
   );
 };
 
