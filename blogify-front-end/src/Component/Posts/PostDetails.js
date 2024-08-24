@@ -1,19 +1,20 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import { getPostAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { deletePostsAction, getPostAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
 import LoadingComponent from "../Alert/LoadingComponent";
 import ErrorMsg from "../Alert/ErrorMessage";
 import PostStats from "./PostStats";
 import calculateReadingtime from "../../utils/calculateReadingTime";
 
 const PostDetails = () => {
-// //! redux store
-const dispatch = useDispatch();
+  const navigate = useNavigate()
+  const dispatch = useDispatch();
+ //! redux store
 const { posts, error, loading, success } = useSelector(
   (state) => state?.posts
 );
-
+//! GET THE LOGIN USER
 const { userAuth } = useSelector((state) => state?.users);
 //! get Params
 const {postId} = useParams()
@@ -21,7 +22,18 @@ const {postId} = useParams()
 useEffect(() => {
   dispatch(getPostAction(postId));
 }, [dispatch]);
+//! Get the creator of the post
+const creator = posts?.post?.author?._id.toString();
+const loginUser = userAuth?.userInfo?._id.toString();
+const isCreator = creator === loginUser;
 
+//! delete post handler
+const deletePostHandler = ()=>{
+  dispatch(deletePostsAction(postId))
+  if(success){
+    navigate("/posts")
+  }
+}
 
   return (
     <>
@@ -43,7 +55,7 @@ useEffect(() => {
             <p className="inline-block font-medium text-green-500">{posts?.post?.author?.username}</p>
             <span className="mx-1 text-green-500">•</span>
             <p className="inline-block font-medium text-green-500">
-            {posts?.post?.createdAt}
+            {new Date(posts?.post?.createdAt).toDateString()}
             </p>
           </div>
           <h2 className="mb-4 text-3xl font-bold leading-tight tracking-tighter md:text-5xl text-darkCoolGray-900">
@@ -64,10 +76,7 @@ useEffect(() => {
               <h4 className="text-base font-bold md:text-lg text-coolGray-800">
               {posts?.post?.category?.name}
               </h4>
-              <p className="text-base md:text-lg text-coolGray-500">
-                12 October 2021
-              </p>
-            </div>
+              </div>
           </div>
         </div>
       </div>
@@ -101,7 +110,12 @@ useEffect(() => {
           <p className="pb-10 mb-8 text-lg font-medium border-b md:text-xl text-coolGray-500 border-coolGray-100">
             {posts?.post?.content}
           </p>
-          <div className="flex justify-end mb-4">
+          {/* Delete and update icons */}
+
+          {
+            isCreator &&
+            <div className="flex justify-end mb-4">
+            {/* edit */}
             <button className="p-2 mr-2 text-gray-500 hover:text-gray-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -118,7 +132,10 @@ useEffect(() => {
                 />
               </svg>
             </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700">
+            {/* delete */}
+            <button
+            onClick={deletePostHandler}
+             className="p-2 text-gray-500 hover:text-gray-700">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -135,6 +152,7 @@ useEffect(() => {
               </svg>
             </button>
           </div>
+          }
           <h3 className="mb-4 text-2xl font-semibold md:text-3xl text-coolGray-800">
             Add a comment
           </h3>

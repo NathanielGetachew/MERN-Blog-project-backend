@@ -7,6 +7,7 @@ const INTITIAL_STATE = {
   loading: false,
   error: null,
   posts: [],
+
   post: null,
   success: false,
 };
@@ -28,11 +29,63 @@ export const fetchPublicPostsAction = createAsyncThunk(
     }
   }
 );
+//! Fetch Private posts
+export const fetchPrivatePostsAction = createAsyncThunk(
+  "posts/fetch-private-posts",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+        "http://localhost:9080/api/v1/posts",config
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//! Delete post
+export const deletePostsAction = createAsyncThunk(
+  "posts/delete-post",
+  async (postId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    
+    try {
+
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      const { data } = await axios.delete(
+        `http://localhost:9080/api/v1/posts/${postId}`,config
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
 //! create post
 export const addPostActionAction = createAsyncThunk(
   "post/create",
   async (payload, { rejectWithValue, getState, dispatch }) => { 
-    console.log(payload);
+    
     try {
       // convert the payload to formData
    const formData = new FormData();
@@ -92,8 +145,7 @@ const publicPostSlice = createSlice({
     // handle the fulfilled state
     builder.addCase(fetchPublicPostsAction.fulfilled, (state, action) => {
       state.posts = action.payload;
-      state.success = true;
-      state.loading = false;
+     state.loading = false;
       state.error = null;
     });
     //* handle the rejection
@@ -101,6 +153,23 @@ const publicPostSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+//! fetch private posts
+builder.addCase(fetchPrivatePostsAction.pending, (state, action) => {
+  state.loading = true;
+});
+// handle the fulfilled state
+builder.addCase(fetchPrivatePostsAction.fulfilled, (state, action) => {
+  state.posts = action.payload;
+  state.loading = false;
+  state.error = null;
+});
+//* handle the rejection
+builder.addCase(fetchPrivatePostsAction.rejected, (state, action) => {
+  state.error = action.payload;
+  state.loading = false;
+});
+
 
     
     //! add post 
@@ -120,7 +189,7 @@ const publicPostSlice = createSlice({
       state.loading = false;
     });
    
-//! get public posts
+//! get single posts
 builder.addCase(getPostAction.pending, (state, action) => {
   state.loading = true;
 });
@@ -137,6 +206,24 @@ builder.addCase(getPostAction.rejected, (state, action) => {
   state.loading = false;
 });
 
+//! delete post
+builder.addCase(deletePostsAction.pending, (state, action) => {
+  state.loading = true;
+});
+// handle the fulfilled state
+builder.addCase(deletePostsAction.fulfilled, (state, action) => {
+  state.posts = action.payload;
+  state.success = true;
+  state.loading = false;
+  state.error = null;
+});
+//* handle the rejection
+builder.addCase(deletePostsAction.rejected, (state, action) => {
+  state.error = action.payload;
+  state.loading = false;
+});
+
+
     //! Reset Error Action
     builder.addCase(resetErrorAction.fulfilled, (state) => {
       state.error = null;
@@ -148,6 +235,9 @@ builder.addCase(getPostAction.rejected, (state, action) => {
     });
   },
 });
+
+
+
 
 
 //! Generate Reducers

@@ -9,6 +9,7 @@ import ProtectedRoute from "./AuthRoute/protectedRoute"
 import PublicPosts from "./Component/Posts/PublicPosts"
 import AddPost from "./Component/Posts/AddPost"
 import PostDetails from "./Component/Posts/PostDetails"
+import PostsLists from "./Component/Posts/PostsLists"
 
 
 
@@ -44,6 +45,14 @@ export default function App() {
      <PostDetails/>
      </ProtectedRoute>}>
      </Route>
+
+     {/*  Private posts */}
+    <Route path ="/posts" element={<ProtectedRoute>
+     <PostsLists/>
+     </ProtectedRoute>}>
+     </Route>
+
+
 
     
 

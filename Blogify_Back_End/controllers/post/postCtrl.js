@@ -107,6 +107,13 @@ exports.getPublicPosts = asynchandler(async (req, res) => {
 });
 
 exports.deletePost = asynchandler(async (req, res) => {
+  //! find the post
+  const postFound = await Post.findById(req.params.id);
+  const IsAuthor = req.userAuth?._id.toString() === postFound?.author?._id.toString();
+  if(!IsAuthor){
+     throw new Error("Action denied, you are not the creator of this post") 
+  }
+
   await Post.findByIdAndDelete(req.params.id);
 
   res.status(201).json({
