@@ -112,6 +112,37 @@ export const addPostActionAction = createAsyncThunk(
   }
 );
 
+//! update post
+export const updatePostActionAction = createAsyncThunk(
+  "post/update",
+  async (payload, { rejectWithValue, getState, dispatch }) => { 
+    
+    try {
+      // convert the payload to formData
+   const formData = new FormData();
+   formData.append("title",payload?.title)
+   formData.append("content",payload?.content)
+   formData.append("categoryId",payload?.category)
+   formData.append("file",payload?.image)
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+      }
+    }
+      const { data } = await axios.put(
+      `http://localhost:9080/api/v1/posts/${payload?.postId}`,
+        formData,
+        config
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 //! Fetch single post
 
 export const getPostAction = createAsyncThunk(
@@ -196,7 +227,6 @@ builder.addCase(getPostAction.pending, (state, action) => {
 // handle the fulfilled state
 builder.addCase(getPostAction.fulfilled, (state, action) => {
   state.posts = action.payload;
-  state.success = true;
   state.loading = false;
   state.error = null;
 });
@@ -222,6 +252,25 @@ builder.addCase(deletePostsAction.rejected, (state, action) => {
   state.error = action.payload;
   state.loading = false;
 });
+//! udpate post
+builder.addCase(updatePostActionAction.pending, (state, action) => {
+  state.loading = true;
+});
+// handle the fulfilled state
+builder.addCase(updatePostActionAction.fulfilled, (state, action) => {
+  state.posts = action.payload;
+  state.success = true;
+  state.loading = false;
+  state.error = null;
+});
+//* handle the rejection
+builder.addCase(updatePostActionAction.rejected, (state, action) => {
+  state.error = action.payload;
+  state.loading = false;
+});
+
+
+
 
 
     //! Reset Error Action

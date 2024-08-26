@@ -3,6 +3,7 @@ const Category = require("../../model/Categories/Category");
 const Post = require("../../model/Post/Post");
 const User = require("../../model/User/User");
 const expressAsyncHandler = require("express-async-handler");
+const { post } = require("../../routes/post/postRouter");
 //@desc Create a post
 // @route Post /api/v1/posts
 //@access private
@@ -127,10 +128,21 @@ exports.deletePost = asynchandler(async (req, res) => {
 //@ access private
 
 exports.updatePost = asynchandler(async (req, res) => {
-  const post = await Post.findByIdAndUpdate(
-    req.params.id,
-    req.body,
+  //! check if the post already exists
+   const {id} = req.params.id
+   const postFound = await Post.findById(id);
+   if(!postFound){
+    throw new Error("Post not Found!")
+   }
+//! image upload
+const {title,category,content} = req.body
 
+  const post = await Post.findByIdAndUpdate(
+    id,{image: req?.file?.path ? req?.file?.path : image,
+      title: postFound?.title,
+      category: category ? category : postFound?.category,
+      content:contetnt ? content: postFound?.content
+     },
     {
       new: true,
       runValidators: true,

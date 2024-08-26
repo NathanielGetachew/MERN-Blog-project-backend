@@ -40,7 +40,7 @@ postRouter.get("/", isLoggedin, getPosts);
 postRouter.delete("/:id", isLoggedin, deletePost);
 
 // update
-postRouter.put("/:id", isLoggedin, updatePost);
+postRouter.put("/:id", isLoggedin,pload.single("file"), updatePost);
 // Like post
 postRouter.put("/likes/:id", isLoggedin, likePost);
 
