@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import { fetchCategoriesAction } from "../HomePage/Redux/Slices/Categories/category Slice";
-import { addPostActionAction, updatePostActionAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+import {updatePostAction} from "../HomePage/Redux/Slices/Posts/PostSlice ";
 import LoadingComponent from "../Alert/LoadingComponent";
 import SuccessMsg from "../Alert/SuccessMsg";
 import ErrorMsg from "../Alert/ErrorMessage";
@@ -13,6 +13,7 @@ const UpdatePost = () => {
 
 //! get the post id from the params
   const {postId} = useParams();
+ 
 
 
 
@@ -67,12 +68,13 @@ const UpdatePost = () => {
     console.log(e);
     setFormData({ ...formData, image: e.target.files[0] });
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     // dispatch action
     
-  dispatch(updatePostActionAction({...formData, postId}));
+  dispatch(updatePostAction({...formData, postId}));
       e.preventDefault();
 
       setFormData({

@@ -128,30 +128,30 @@ exports.deletePost = asynchandler(async (req, res) => {
 //@ access private
 
 exports.updatePost = asynchandler(async (req, res) => {
-  //! check if the post already exists
-   const {id} = req.params.id
-   const postFound = await Post.findById(id);
-   if(!postFound){
-    throw new Error("Post not Found!")
-   }
-//! image upload
-const {title,category,content} = req.body
-
+  //!Check if the post exists
+  const { id } = req.params;
+  const postFound = await Post.findById(id);
+  if (!postFound) {
+    throw new Error("Post not found");
+  }
+  //! image update
+  const { title, category, content } = req.body;
   const post = await Post.findByIdAndUpdate(
-    id,{image: req?.file?.path ? req?.file?.path : image,
-      title: postFound?.title,
+    id,
+    {
+      image: req?.file?.path ? req?.file?.path : postFound?.image,
+      title: title ? title : postFound?.title,
       category: category ? category : postFound?.category,
-      content:contetnt ? content: postFound?.content
-     },
+      content: content ? content : postFound?.content,
+    },
     {
       new: true,
       runValidators: true,
     }
   );
-
   res.status(201).json({
-    status: "Success",
-    message: "Post Updated  Successfully",
+    status: "success",
+    message: "post successfully updated",
     post,
   });
 });
@@ -171,11 +171,7 @@ exports.likePost = expressAsyncHandler(async (req, res) => {
     throw new Error("Post not found!");
   }
   // // check if the user has already liked the post
-  // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
-  // if(userHasLiked){
-  //   throw new Error("User has already liked this post")
-  // }
-  // push the user into the post likes, letting MnogoDB handles the duplication issue
+  
   await Post.findByIdAndUpdate(
     id,
     {
@@ -193,6 +189,38 @@ exports.likePost = expressAsyncHandler(async (req, res) => {
   });
 });
 
+// desc post view count 
+// route PUT api/v1/posts/:id/post-views-count
+//@ access private
+
+exports.postViewCount = expressAsyncHandler(async (req, res) => {
+  // Get the id of the post
+  const { id } = req.params;
+  // get the login user
+  const userId = req.userAuth._id;
+  // find the post
+  const post = await Post.findById(id);
+  if (!post) {
+    throw new Error("Post not found!");
+  }
+  // // check if the user has already liked the post
+  
+  await Post.findByIdAndUpdate(
+    id,
+    {
+      $addToSet: { postViews: userId },
+    },
+    { new: true }
+  );
+ 
+  
+  await post.save();
+  res.status(200).json({
+    message: "Post viewed succesfully",
+  });
+});
+
+
 // desc disliking a  post
 // route PUT api/v1/post/dislikes/:id
 //@ access private
@@ -207,13 +235,7 @@ exports.dislikePost = expressAsyncHandler(async (req, res) => {
   if (!post) {
     throw new Error("Post not found!");
   }
-  // // check if the user has already liked the post
-  // const userHasLiked = post.likes.some((like)=>like.toString()===userId.toString());
-  // if(userHasLiked){
-  //   throw new Error("User has already liked this post")
-  // }
-  // push the user into the post likes, letting MnogoDB handles the duplication issue
-  await Post.findByIdAndUpdate(
+   await Post.findByIdAndUpdate(
     id,
     {
       $addToSet: { dislikes: userId },
@@ -244,7 +266,7 @@ exports.claps = expressAsyncHandler(async (req, res) => {
     throw new Error("post not found!");
   }
   // implement the claps
-  await Post.findByIdAndUpdate(
+  const updatedPost = await Post.findByIdAndUpdate(
     id,
     {
       $inc: { claps: 1 },
@@ -255,7 +277,7 @@ exports.claps = expressAsyncHandler(async (req, res) => {
   );
   res.status(200).json({
     message: "The post was clapped successfully",
-    post,
+    updatedPost,
   });
 });
 
@@ -293,3 +315,4 @@ exports.schedule = expressAsyncHandler(async (req, res) => {
 // desc scheduling a  post
 // route PUT api/v1/post/schedule/:id
 //@ access private
+

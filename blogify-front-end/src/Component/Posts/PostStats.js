@@ -1,17 +1,42 @@
 import React from "react";
 import { AiOutlineEye } from "react-icons/ai";
 import { RiEmotionLine } from "react-icons/ri";
+import { MdWavingHand } from "react-icons/md";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import { clapPostAction, dislikePostAction, likePostAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+
 
 const PostStats = ({
-  views,
+  postViews,
   likes,
   dislikes,
   totalComments,
   readingTime,
   createdAt,
+  postId,
+  claps,
 }) => {
   const timeSinceCreated = moment(createdAt).fromNow();
+  const dispatch = useDispatch()
+
+  //! like post handler
+const LikePostHandler = () => {
+  dispatch(likePostAction(postId))
+
+}
+
+ //! dislike post handler
+ const DisikePostHandler = () => {
+  dispatch(dislikePostAction(postId))
+  
+}
+
+//! dislike post handler
+const clapPostHandler = () => {
+  dispatch(clapPostAction(postId))
+  
+}
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 p-2 md:justify-start">
@@ -36,9 +61,13 @@ const PostStats = ({
           />
         </svg>
 
-        {views}
+        {postViews?.length}
       </div>
-      <div className="flex items-center gap-1 m-2 text-2xl text-gray-400">
+      {/* like post button */}
+      <button
+        onClick={LikePostHandler}
+        className="flex items-center gap-1 m-2 text-2xl text-gray-400"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -55,8 +84,11 @@ const PostStats = ({
         </svg>
 
         {likes}
-      </div>
-      <div className="flex items-center gap-1 m-2 text-2xl text-gray-400">
+      </button>
+
+      <button 
+       onClick={DisikePostHandler}
+      className="flex items-center gap-1 m-2 text-2xl text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -73,8 +105,16 @@ const PostStats = ({
         </svg>
 
         {dislikes}
-      </div>
-      
+      </button>
+      {/* claps */}
+      <button 
+      onClick={clapPostHandler}
+      className="flex items-center gap-1 m-2 text-2xl text-gray-400">
+       <MdWavingHand/> 
+
+        {claps}
+      </button>
+
       <div className="flex items-center gap-1 m-2 text-2xl text-gray-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"

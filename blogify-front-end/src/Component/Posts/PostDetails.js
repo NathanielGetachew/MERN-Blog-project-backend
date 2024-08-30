@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { deletePostsAction, getPostAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+import { deletePostsAction, getPostAction, postViewCountAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
 import LoadingComponent from "../Alert/LoadingComponent";
 import ErrorMsg from "../Alert/ErrorMessage";
 import PostStats from "./PostStats";
@@ -21,7 +21,13 @@ const {postId} = useParams()
 // dispatch
 useEffect(() => {
   dispatch(getPostAction(postId));
-}, [dispatch]);
+}, [dispatch, postId,posts?.post?.likes.length,posts?.post?.dislikes.length]);
+
+//! post view count
+useEffect(() => {
+  dispatch(postViewCountAction(postId));
+}, [dispatch, ]);
+
 //! Get the creator of the post
 const creator = posts?.post?.author?._id.toString();
 const loginUser = userAuth?.userInfo?._id.toString();
@@ -37,7 +43,7 @@ const deletePostHandler = ()=>{
 
   return (
     <>
-      {loading ? <LoadingComponent/>:      error ? <ErrorMsg message ={error?.message}/>: 
+           {/* error ? <ErrorMsg message ={error?.message}/>:  */}
       <section
       className="py-16 bg-white md:py-24"
       style={{
@@ -97,13 +103,15 @@ const deletePostHandler = ()=>{
         {/* Posts stats */}
         
         <PostStats
-        postViews = {posts?.Post?.postViews.length}
-        likes = {posts?.post?.likes.length}
-        dislikes = {posts?.Post?.dislikes.length}  
-        totalComments = {posts?.Post?.comment?.length}
-        createdAt={posts?.post?.createdAt}
-        readingTime={calculateReadingtime(posts?.post?.content)}
-        />
+              postViews={posts?.post?.postViews}
+              likes={posts?.post?.likes.length}
+              dislikes={posts?.post?.dislikes.length}
+              totalComments={posts?.post?.comments?.length}
+              createdAt={posts?.post?.createdAt}
+              readingTime={calculateReadingtime(posts?.post?.content)}
+              postId={postId}
+              claps={posts?.post?.claps}
+            />
       </div>
       <div className="container px-4 mx-auto">
         <div className="mx-auto md:max-w-3xl">
@@ -160,7 +168,7 @@ const deletePostHandler = ()=>{
           {/* Comment form */}
         </div>
       </div>
-    </section> }
+    </section> 
     </>
     
   );
