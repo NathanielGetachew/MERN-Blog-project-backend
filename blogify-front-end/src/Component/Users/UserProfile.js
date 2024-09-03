@@ -1,4 +1,5 @@
 import { FiUpload } from "react-icons/fi";
+import UserPosts from "./usersPosts";
 const profile = {
   name: "Ricardo Cooper",
   imageUrl:
@@ -216,12 +217,14 @@ export default function UserProfile() {
                       {profile.about}
                     </div>
                   </div>
-                </div>
+                 </div>
               </article>
             </main>
           </div>
         </div>
       </div>
+      {/* user posts */}
+      <UserPosts posts = {profile?.user?.posts}/>
     </>
   );
 }
