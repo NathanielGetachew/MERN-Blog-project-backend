@@ -45,7 +45,7 @@ const UserPosts = ({ posts }) => {
                       className="inline-block px-3 py-1 text-xs font-medium leading-5 text-green-500 uppercase bg-green-100 rounded-full shadow-sm hover:text-green-600 hover:bg-green-200"
                       href="#"
                     >
-                      {post?.category?.name}
+                      {posts?.category?.name}
                     </a>
                     {/* Schedule post link */}
                     <Link

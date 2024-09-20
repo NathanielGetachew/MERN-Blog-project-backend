@@ -12,7 +12,8 @@ const {
   forgotPassword,
   resetPassword,
   accountVerificationEmail,
-  verifyAccount
+  verifyAccount,
+  getPublicProfile
 } = require("../../controllers/users/usersCtrl.js");
 const storage = require("../../utils/fileUpload.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
@@ -29,6 +30,9 @@ usersRouter.post("/login", login);
 
 // Profile
 usersRouter.get("/profile/", isLoggedin, getProfile);
+
+// Public Profile
+usersRouter.get("/public-profile/:userId", getPublicProfile);
 
 // block user
 usersRouter.put("/block/:userIdToBlock", isLoggedin, blockUser);

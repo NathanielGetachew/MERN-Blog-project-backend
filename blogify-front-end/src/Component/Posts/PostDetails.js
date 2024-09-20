@@ -59,7 +59,7 @@ const deletePostHandler = ()=>{
             {posts?.post?.category?.name}
           </div>
           <div className="flex items-center justify-center">
-            <p className="inline-block font-medium text-green-500">{posts?.post?.author?.username}</p>
+            
             <span className="mx-1 text-green-500">•</span>
             <p className="inline-block font-medium text-green-500">
             {new Date(posts?.post?.createdAt).toDateString()}
@@ -71,7 +71,8 @@ const deletePostHandler = ()=>{
           <p className="mb-10 text-lg font-medium md:text-xl text-coolGray-500">
             
           </p>
-          <div className="flex items-center justify-center -mx-2 text-left">
+          <Link to={`/user-public-profile/${posts?.post?.author?._id}`}
+           className="flex items-center justify-center -mx-2 text-left">
             <div className="w-auto px-2">
               <img
                 className="w-12 h-12 rounded-full"
@@ -81,10 +82,10 @@ const deletePostHandler = ()=>{
             </div>
             <div className="w-auto px-2">
               <h4 className="text-base font-bold md:text-lg text-coolGray-800">
-              {posts?.post?.category?.name}
+              {posts?.post?.author?.username}
               </h4>
               </div>
-          </div>
+          </Link>
         </div>
       </div>
       <img

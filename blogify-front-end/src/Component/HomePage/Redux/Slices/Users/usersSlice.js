@@ -38,6 +38,58 @@ export const registerAction = createAsyncThunk(
   }
 );
 
+//! block use aciton
+export const blockUserAction = createAsyncThunk(
+  "users/block-user",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+       `http://localhost:9080/api/v1/users/block/${userId}`,
+       {},
+       config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//! get user public profile
+export const publicProfileAction = createAsyncThunk(
+  "users/public-profile",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+       `http://localhost:9080/api/v1/users/public-profile/${userId}`,config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 //! login Action
 export const loginAction = createAsyncThunk(
   "users/login",
@@ -103,6 +155,43 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+    //user blocking slice
+    builder.addCase(blockUserAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(blockUserAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(blockUserAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+     
+
+     //get public profile
+     builder.addCase(publicProfileAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(publicProfileAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(publicProfileAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+
     //! Reset Error Action
     builder.addCase(resetErrorAction.fulfilled,(state)=>{
       state.error=null;

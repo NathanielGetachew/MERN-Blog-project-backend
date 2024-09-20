@@ -218,7 +218,7 @@ exports.postViewCount = expressAsyncHandler(async (req, res) => {
       $addToSet: { postViews: userId },
     },
     { new: true }
-  );
+  ).populate("author");
  
   
   await post.save();

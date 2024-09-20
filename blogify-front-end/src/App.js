@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Homepage from "./Component/HomePage/Homepage";
 import Login from "./Component/Users/Login";
-import UserProfile from "./Component/Users/UserProfile";
+
 import PublicNavBar from "./Component/Navbar/PublicNavBar";
 import PrivateNavbar from "./Component/Navbar/PrivateNavbar";
 import ProtectedRoute from "./AuthRoute/protectedRoute";
@@ -11,6 +11,7 @@ import AddPost from "./Component/Posts/AddPost";
 import PostDetails from "./Component/Posts/PostDetails";
 import PostsLists from "./Component/Posts/PostsLists";
 import UpdatePost from "./Component/Posts/UpdatePosts";
+import PublicUserProfile from "./Component/Users/publicUserProfile";
 
 export default function App() {
   //! get the login user from the state
@@ -26,10 +27,10 @@ export default function App() {
 
         {/* profile */}
         <Route
-          path="/user-profile"
+          path="/user-public-profile/:userId"
           element={
             <ProtectedRoute>
-              <UserProfile />
+              <PublicUserProfile />
             </ProtectedRoute>
           }
         ></Route>
@@ -64,7 +65,7 @@ export default function App() {
           }
         ></Route>
 
-        {/*  update post */}
+         {/* update post
         <Route
           path="/posts/:postId/update"
           element={
@@ -72,7 +73,7 @@ export default function App() {
               <UpdatePost />
             </ProtectedRoute>
           }
-        ></Route>
+        ></Route> */}
       </Routes>
     </BrowserRouter>
   );

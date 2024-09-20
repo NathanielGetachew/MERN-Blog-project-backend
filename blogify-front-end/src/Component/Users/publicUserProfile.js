@@ -1,28 +1,25 @@
 import { FiUpload } from "react-icons/fi";
 import UserPosts from "./usersPosts";
-const profile = {
-  name: "Ricardo Cooper",
-  imageUrl:
-    "https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80",
-  coverImageUrl:
-    "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
-  about: `
-    <p>Tincidunt quam neque in cursus viverra orci, dapibus nec tristique. Nullam ut sit dolor consectetur urna, dui cras nec sed. Cursus risus congue arcu aenean posuere aliquam.</p>
-    <p>Et vivamus lorem pulvinar nascetur non. Pulvinar a sed platea rhoncus ac mauris amet. Urna, sem pretium sit pretium urna, senectus vitae. Scelerisque fermentum, cursus felis dui suspendisse velit pharetra. Augue et duis cursus maecenas eget quam lectus. Accumsan vitae nascetur pharetra rhoncus praesent dictum risus suspendisse.</p>
-  `,
-  fields: {
-    Phone: "(555) 123-4567",
-    Email: "ricardocooper@example.com",
-    Title: "Senior Front-End Developer",
-    Team: "Product Development",
-    Location: "San Francisco",
-    Sits: "Oasis, 4th floor",
-    Salary: "$145,000",
-    Birthday: "June 8, 1990",
-  },
-};
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { blockUserAction, publicProfileAction } from "../HomePage/Redux/Slices/Users/usersSlice";
+import { useParams } from "react-router-dom";
 
-export default function UserProfile() {
+export default function PublicUserProfile() {
+  // get the id from the params
+  const { userId } = useParams();
+//! get the data from the store
+const dispatch = useDispatch();
+useEffect(()=>{
+ dispatch(publicProfileAction(userId))
+},[dispatch,userId])
+
+const {profile,loading,error} = useSelector((state)=>state?.users)
+// block user handler
+const blockuserhandler = ()=>{
+  dispatch(blockUserAction(userId))
+}
+
   return (
     <>
       <div className="flex h-full">
@@ -35,7 +32,7 @@ export default function UserProfile() {
                   <div className="relative">
                     <img
                       className="h-32 w-full object-cover lg:h-48"
-                      src={profile.coverImageUrl}
+                      src= "https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
                       alt=""
                     />
                     <button
@@ -51,7 +48,7 @@ export default function UserProfile() {
                       <div className="relative flex">
                         <img
                           className="h-24 w-24 rounded-full ring-4 ring-white sm:h-32 sm:w-32"
-                          src={profile.imageUrl}
+                          src="https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80"
                           alt=""
                         />
                         <button
@@ -65,7 +62,8 @@ export default function UserProfile() {
                       <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                         <div className="mt-6 min-w-0 flex-1 sm:hidden 2xl:block">
                           <h1 className="truncate text-2xl font-bold text-gray-900">
-                            {profile.name}
+                            {profile?.user?.username}
+                            
                           </h1>
                         </div>
                       </div>
@@ -121,6 +119,7 @@ export default function UserProfile() {
                         </button>
                         {/* Block */}
                         <button
+                        onClick={blockuserhandler}
                           type="button"
                           className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                         >
@@ -190,7 +189,7 @@ export default function UserProfile() {
                     </div>
                     <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
                       <h1 className="truncate text-2xl font-bold text-gray-900">
-                        {profile.name}
+                        {profile?.user?.username}
                       </h1>
                     </div>
                   </div>
@@ -198,26 +197,16 @@ export default function UserProfile() {
 
                 <div className="mt-6 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                   <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                    {Object.entries(profile.fields).map(([field, value]) => (
-                      <div className="sm:col-span-1" key={field}>
+                    
+                      <div className="sm:col-span-1">
                         <dt className="text-sm font-medium text-gray-500">
-                          {field}
+                          Email
                         </dt>
-                        <dd className="mt-1 text-sm text-gray-900">{value}</dd>
+                        <dd className="mt-1 text-sm text-gray-900">
+                        {profile?.user?.email} </dd>
                       </div>
-                    ))}
                   </dl>
-                  <div className="mt-8">
-                    <div className="flex space-x-6">
-                      <h2 className="text-sm font-medium text-gray-500">
-                        About
-                      </h2>
-                    </div>
-                    <div className="mt-5 text-sm text-gray-700">
-                      {profile.about}
-                    </div>
-                  </div>
-                 </div>
+                </div>
               </article>
             </main>
           </div>
