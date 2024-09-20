@@ -2,7 +2,7 @@ import { FiUpload } from "react-icons/fi";
 import UserPosts from "./usersPosts";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { blockUserAction, publicProfileAction } from "../HomePage/Redux/Slices/Users/usersSlice";
+import { blockUserAction, privateProfileAction, publicProfileAction, UnblockUserAction } from "../HomePage/Redux/Slices/Users/usersSlice";
 import { useParams } from "react-router-dom";
 
 export default function PublicUserProfile() {
@@ -14,12 +14,27 @@ useEffect(()=>{
  dispatch(publicProfileAction(userId))
 },[dispatch,userId])
 
-const {profile,loading,error} = useSelector((state)=>state?.users)
+
+const {user,loading,error,profile} = useSelector((state)=>state?.users)
+//! get all the users the login user has blocked
+const blockedUsers = profile?.user?.blockedUsers;
+
+const hasBlocked = blockedUsers?.some((user)=> user?._id === userId
+)
+// get private profile
+useEffect(()=>{
+  dispatch(privateProfileAction())
+ },[dispatch, hasBlocked])
+
 // block user handler
 const blockuserhandler = ()=>{
   dispatch(blockUserAction(userId))
 }
 
+// user unblocking
+const unblockUserhandler = ()=>{
+  dispatch(UnblockUserAction(userId))
+}
   return (
     <>
       <div className="flex h-full">
@@ -62,13 +77,13 @@ const blockuserhandler = ()=>{
                       <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:space-x-6 sm:pb-1">
                         <div className="mt-6 min-w-0 flex-1 sm:hidden 2xl:block">
                           <h1 className="truncate text-2xl font-bold text-gray-900">
-                            {profile?.user?.username}
+                            {user?.user?.username}
                             
                           </h1>
                         </div>
                       </div>
                       <div className="justify-stretch mt-6 flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4">
-                        {/* Profile Views */}
+                        {/* user Views */}
                         <button
                           type="button"
                           className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
@@ -95,8 +110,10 @@ const blockuserhandler = ()=>{
                           </svg>
                           20
                         </button>
-                        {/* unblock */}
-                        <button
+                        {/* block/unblock */}
+                        {hasBlocked ?
+                          <button
+                        onClick={unblockUserhandler}
                           type="button"
                           className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                         >
@@ -116,8 +133,7 @@ const blockuserhandler = ()=>{
                             />
                           </svg>
                           Unblock
-                        </button>
-                        {/* Block */}
+                        </button>:
                         <button
                         onClick={blockuserhandler}
                           type="button"
@@ -139,7 +155,10 @@ const blockuserhandler = ()=>{
                             />
                           </svg>
                           Block
-                        </button>
+                        </button>}
+                        
+                        
+                        
 
                         {/* follow */}
                         <button
@@ -189,7 +208,7 @@ const blockuserhandler = ()=>{
                     </div>
                     <div className="mt-6 hidden min-w-0 flex-1 sm:block 2xl:hidden">
                       <h1 className="truncate text-2xl font-bold text-gray-900">
-                        {profile?.user?.username}
+                        {user?.user?.username}
                       </h1>
                     </div>
                   </div>
@@ -203,7 +222,7 @@ const blockuserhandler = ()=>{
                           Email
                         </dt>
                         <dd className="mt-1 text-sm text-gray-900">
-                        {profile?.user?.email} </dd>
+                        {user?.user?.email} </dd>
                       </div>
                   </dl>
                 </div>
@@ -213,7 +232,7 @@ const blockuserhandler = ()=>{
         </div>
       </div>
       {/* user posts */}
-      <UserPosts posts = {profile?.user?.posts}/>
+      <UserPosts posts = {user?.user?.posts}/>
     </>
   );
 }

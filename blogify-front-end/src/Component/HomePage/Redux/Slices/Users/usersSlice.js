@@ -37,6 +37,34 @@ export const registerAction = createAsyncThunk(
     }
   }
 );
+//! block use aciton
+export const UnblockUserAction = createAsyncThunk(
+  "users/unblock-user",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+       `http://localhost:9080/api/v1/users/unblock/${userId}`,
+       {},
+       config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
 
 //! block use aciton
 export const blockUserAction = createAsyncThunk(
@@ -55,6 +83,31 @@ export const blockUserAction = createAsyncThunk(
        `http://localhost:9080/api/v1/users/block/${userId}`,
        {},
        config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//! get user private profile
+export const privateProfileAction = createAsyncThunk(
+  "users/private-profile",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+       `http://localhost:9080/api/v1/users/profile/`,config,
         
       );
     
@@ -172,6 +225,25 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+    //user unblocking slice
+    builder.addCase(UnblockUserAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(UnblockUserAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(UnblockUserAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+     
+
      
 
      //get public profile
@@ -180,13 +252,30 @@ const userSlice = createSlice({
     });
     // handle the fulfilled state
     builder.addCase(publicProfileAction.fulfilled, (state, action) => {
-      state.profile = action.payload;
+      state.user = action.payload;
       state.success = true;
       state.loading = false;
       state.error = null;
     });
     //* handle the rejection
     builder.addCase(publicProfileAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+     //get private profile
+     builder.addCase(privateProfileAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(privateProfileAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(privateProfileAction.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
