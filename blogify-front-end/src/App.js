@@ -12,6 +12,8 @@ import PostDetails from "./Component/Posts/PostDetails";
 import PostsLists from "./Component/Posts/PostsLists";
 import UpdatePost from "./Component/Posts/UpdatePosts";
 import PublicUserProfile from "./Component/Users/publicUserProfile";
+import PrivateUserProfile from "./Component/Users/PrivateUserProfile";
+
 
 export default function App() {
   //! get the login user from the state
@@ -25,7 +27,18 @@ export default function App() {
         <Route path="" element={<Homepage />}></Route>
         <Route path="/login" element={<Login />}></Route>
 
-        {/* profile */}
+        {/*private profile */}
+        <Route
+          path="/user-profile"
+          element={
+            <ProtectedRoute>
+              <PrivateUserProfile />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        
+        {/* public profile */}
         <Route
           path="/user-public-profile/:userId"
           element={
