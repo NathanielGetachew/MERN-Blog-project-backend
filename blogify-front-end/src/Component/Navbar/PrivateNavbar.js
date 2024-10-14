@@ -7,7 +7,7 @@ import { logoutAction } from "../HomePage/Redux/Slices/Users/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {FaBlog} from "react-icons/fa"
 
- 
+
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -18,6 +18,7 @@ export default function PrivateNavbar() {
   const {userAuth} = useSelector((state)=>state?.users) 
   const logoutHandler = ()=>{
     dispatch(logoutAction())
+    
     window.location.reload();
   }
   // reload the page upon 

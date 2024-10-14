@@ -13,7 +13,9 @@ const {
   resetPassword,
   accountVerificationEmail,
   verifyAccount,
-  getPublicProfile
+  getPublicProfile,
+  uploadeCoverImage,
+  uploadeProfilePicture
 } = require("../../controllers/users/usersCtrl.js");
 const storage = require("../../utils/fileUpload.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
@@ -55,9 +57,19 @@ usersRouter.post("/forgot-password", forgotPassword);
 // reset password
 usersRouter.post("/reset-password/:resetToken", resetPassword);
 //  account verification email
-usersRouter.put("/accountVerificationEmail", isLoggedin,accountVerificationEmail);
+usersRouter.put("/accountVerificationEmail", isLoggedin,accountVerificationEmail);  
 
 usersRouter.put("/account-verification/:verifyToken", isLoggedin,verifyAccount);
+
+// upload Cover Image
+usersRouter.put("/upload-cover-image", isLoggedin,upload.single("file"), uploadeCoverImage);
+
+// upload  profile Image
+usersRouter.put("/upload-profile-image",isLoggedin,upload.single("file"),uploadeProfilePicture);
+
+
+
+
 
 
 

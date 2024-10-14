@@ -10,15 +10,15 @@ import { uploadProfileImageAction } from "../HomePage/Redux/Slices/Users/usersSl
 
 const UploadProfileImage = () => {
   // fetch categories
-  const dispatch =useDispatch()
+  const dispatch = useDispatch();
   //! Error Message
   const [errors, setErrors] = useState({});
   // get data from store
   useEffect(() => {}, [dispatch]);
-  
-  const {success,loading,error} = useSelector((state)=> state?.users)
+
+  const { success, loading, error } = useSelector((state) => state?.users);
   //! form data here
-   const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     image: null,
   });
   //1. validate form
@@ -59,8 +59,8 @@ const UploadProfileImage = () => {
             Upload Profile Image
           </h2>
           {/* Error here */}
-          {error && <ErrorMsg message={error?.message}/>}
-          {success && <SuccessMsg message = "profile uploaded Successfuly"/>}
+          {error && <ErrorMsg message={error?.message} />}
+          {success && <SuccessMsg message="profile uploaded Successfuly" />}
           <h3 className="mb-7 text-base md:text-lg text-coolGray-500 font-medium text-center">
             upload or update profle image
           </h3>

@@ -13,6 +13,8 @@ import PostsLists from "./Component/Posts/PostsLists";
 import UpdatePost from "./Component/Posts/UpdatePosts";
 import PublicUserProfile from "./Component/Users/publicUserProfile";
 import PrivateUserProfile from "./Component/Users/PrivateUserProfile";
+import UploadCoverImage from "./Component/Users/UploadCoverImage";
+import UploadProfileImage from "./Component/Users/UploadProfileImage";
 
 
 export default function App() {
@@ -87,6 +89,28 @@ export default function App() {
             </ProtectedRoute>
           }
         ></Route> */}
+
+        {/*  upload coverImage */}
+        <Route
+          path="/upload-cover-image"
+          element={
+            <ProtectedRoute>
+              <UploadCoverImage />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        {/*  upload profileImage */}
+        <Route
+          path="/upload-profile-image"
+          element={
+            <ProtectedRoute>
+              <UploadProfileImage />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+
       </Routes>
     </BrowserRouter>
   );

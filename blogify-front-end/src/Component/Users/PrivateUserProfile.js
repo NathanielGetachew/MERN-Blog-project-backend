@@ -27,7 +27,7 @@ export default function PrivateUserProfile() {
   // const sendAccVerificationEmailHandler = () => {
   //   dispatch(sendAccVerificationEmailAction());
   // };
-  console.log(profile);
+  
   return (
     <>
       {/* success msg */}

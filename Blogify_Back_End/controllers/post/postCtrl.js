@@ -9,6 +9,14 @@ const { post } = require("../../routes/post/postRouter");
 //@access private
 
 exports.createPost = asynchandler(async (req, res) => {
+  //! Find the user/chec if user account is verified
+  const userFound = await User.findById(req.userAuth._id);
+  if (!userFound) {
+    throw new Error("User Not found");
+  }
+  if (!userFound?.isVerified) {
+    throw new Error("Action denied, your account is not verified");
+  }
   // Get the payload
   const { title, content, categoryId } = req.body;
   // check if pos already exists
@@ -314,7 +322,7 @@ exports.schedule = expressAsyncHandler(async (req, res) => {
     throw new Error("the scheduled pulbish date can't be in the past");
   }
   // update the Post
-  post.scheduledPublished = scheduledPublish;
+  post.sheduledPublished = scheduledPublish;
   await post.save();
   res.status(200).json({ message: "Post scheduled Succesfully", post });
 });

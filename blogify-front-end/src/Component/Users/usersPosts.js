@@ -16,7 +16,7 @@ const UserPosts = ({ posts }) => {
       <div className="container relative z-10 px-4 mx-auto">
         <div className="mx-auto mb-8 text-center md:max-w-5xl md:mb-16">
           <span className="inline-block px-2 py-px mb-4 text-xs font-medium leading-5 text-green-500 uppercase bg-green-100 rounded-full shadow-sm">
-            Your Posts
+            your Posts
           </span>
           <h3 className="mb-4 text-3xl font-bold leading-tight tracking-tighter md:text-5xl text-darkCoolGray-900">
             Top Posts [{posts?.length}]
@@ -37,7 +37,7 @@ const UserPosts = ({ posts }) => {
                     <img
                       className="w-full"
                       src={post?.image}
-                      alt={post?.tile}
+                      alt={post?.title}
                     />
                   </a>
                   <div className="mb-4">
@@ -45,7 +45,7 @@ const UserPosts = ({ posts }) => {
                       className="inline-block px-3 py-1 text-xs font-medium leading-5 text-green-500 uppercase bg-green-100 rounded-full shadow-sm hover:text-green-600 hover:bg-green-200"
                       href="#"
                     >
-                      {posts?.category?.name}
+                      {post?.category?.name}
                     </a>
                     {/* Schedule post link */}
                     <Link

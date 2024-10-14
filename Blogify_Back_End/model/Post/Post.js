@@ -41,7 +41,7 @@ const postSchema = new mongoose.Schema(
       required: true,
       ref: "Category",
     },
-    shedduledPublished: {
+    sheduledPublished: {
       type: Date,
       default: null,
     },

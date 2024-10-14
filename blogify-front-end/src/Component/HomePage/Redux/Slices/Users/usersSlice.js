@@ -169,6 +169,111 @@ export const logoutAction = createAsyncThunk("users/logout",async()=>{
   return true;
 })
 
+//!Follow User Action
+export const followUserAction = createAsyncThunk(
+  "users/follow-user",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    //make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `http://localhost:9080/api/v1/users/Following/${userId}`,
+        {},
+        config
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//!UnFollow User Action
+export const unFollowUserAction = createAsyncThunk(
+  "users/unfollow-user",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    //make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `http://localhost:9080/api/v1/users/UnFollowing/${userId}`,
+        {},
+        config
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+// ! upload cover image
+export const uploadCoverImageAction = createAsyncThunk(
+  "users/upload-cover-image",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    try {
+      //convert the payload to formdata
+      const formData = new FormData();
+      formData.append("file", payload?.image);
+
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `http://localhost:9080/api/v1/users/upload-cover-image`,
+        formData,
+        config
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
+
+// ! upload profile image
+export const uploadProfileImageAction = createAsyncThunk(
+  "users/upload-profile-image",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    try {
+      //convert the payload to formdata
+      const formData = new FormData();
+      formData.append("file", payload?.image);
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.put(
+        `http://localhost:9080/api/v1/users/upload-profile-image`,
+        formData,
+        config
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
+
 //! users Slices
 
 const userSlice = createSlice({
@@ -274,12 +379,45 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     });
-    //* handle the rejection
+    //* handle the rejection 
     builder.addCase(privateProfileAction.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
 
+
+  //! upload user profile image
+   builder.addCase(uploadProfileImageAction.pending, (state, action) => {
+    state.loading = true;
+  });
+  builder.addCase(uploadProfileImageAction.fulfilled, (state, action) => {
+    state.profile = action.payload;
+    state.isProfileImgUploaded = true;
+    state.loading = false;
+    state.error = null;
+  });
+  builder.addCase(uploadProfileImageAction.rejected, (state, action) => {
+    state.error = action.payload;
+    state.loading = false;
+    state.isProfileImgUploaded = false;
+  });
+
+
+  //! upload user cover image
+  builder.addCase(uploadCoverImageAction.pending, (state, action) => {
+    state.loading = true;
+  });
+  builder.addCase(uploadCoverImageAction.fulfilled, (state, action) => {
+    state.profile = action.payload;
+    state.isCoverImageUploaded = true;
+    state.loading = false;
+    state.error = null;
+  });
+  builder.addCase(uploadCoverImageAction.rejected, (state, action) => {
+    state.error = action.payload;
+    state.loading = false;
+    state.isCoverImageUploaded = false;
+  });
 
     //! Reset Error Action
     builder.addCase(resetErrorAction.fulfilled,(state)=>{
@@ -290,6 +428,35 @@ const userSlice = createSlice({
     builder.addCase(resetSuccessAction.fulfilled,(state)=>{
       state.success=false;
     })
+
+     //follow user
+     builder.addCase(followUserAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(followUserAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(followUserAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+    //unfollow user
+    builder.addCase(unFollowUserAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(unFollowUserAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(unFollowUserAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
   },
 });

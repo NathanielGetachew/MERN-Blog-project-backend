@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingComponent from "../Alert/LoadingComponent";
-import ErrorMsg from "../Alert/ErrorMsg";
-import SuccesMsg from "../Alert/SuccesMsg";
-import { uploadCoverImageAction } from "../../redux/slices/users/usersSlices";
+import ErrorMsg from "../Alert/ErrorMessage";
+import SuccessMsg from "../Alert/SuccessMsg";
+import { uploadCoverImageAction } from "../HomePage/Redux/Slices/Users/usersSlice";
 
 const UploadCoverImage = () => {
   //fetch categories
@@ -60,7 +60,7 @@ const UploadCoverImage = () => {
           {/* error */}
           {error && <ErrorMsg message={error?.message} />}
           {isCoverImageUploaded && (
-            <SuccesMsg message="Image uploaded successfully" />
+            <SuccessMsg message="Image uploaded successfully" />
           )}
           <h3 className="mb-7 text-base md:text-lg text-coolGray-500 font-medium text-center">
             Upload or update Cover Image

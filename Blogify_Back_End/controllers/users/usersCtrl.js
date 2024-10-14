@@ -24,7 +24,6 @@ exports.register = asynchandler(async (req, res) => {
     username,
     email,
     password,
-    
   });
   // hash the password
   const salt = await bcrypt.genSalt(10);
@@ -72,6 +71,7 @@ exports.login = asynchandler(async (req, res) => {
     _id: user?._id,
     role: user?.role,
     token: generateToken(user),
+    profilePicture: user?.profilePicture,
   });
 });
 
@@ -104,6 +104,7 @@ exports.getProfile = asynchandler(async (req, res, next) => {
       path: "profileViewers",
       model: "User",
     });
+    
   res.json({
     status: "success",
     message: "Profile fetched",
@@ -119,13 +120,15 @@ exports.getPublicProfile = asynchandler(async (req, res, next) => {
   // trigger custom error
 
   const userId = req.params.userId;
-  const user = await User.findById(userId).select("-password").populate({
-    path: "posts",
-    populate:{
-      path:"category"
-    },
-  })
-    
+  const user = await User.findById(userId)
+    .select("-password")
+    .populate({
+      path: "posts",
+      populate: {
+        path: "category",
+      },
+    });
+
   res.json({
     status: "success",
     message: "Public Profile fetched",
@@ -424,5 +427,94 @@ exports.verifyAccount = expressAsyncHandler(async (req, res) => {
   // return a success response
   res.status(200).json({
     message: "Account Verified succesfully",
+  });
+});
+
+//@desc  Upload profile image
+//@route  PUT /api/v1/users/upload-profile-image
+//@access Private
+
+exports.uploadeProfilePicture = asynchandler(async (req, res) => {
+  // Find the user
+  const userFound = await User.findById(req?.userAuth?._id);
+  if (!userFound) {
+    throw new Error("User not found");
+  }
+  const user = await User.findByIdAndUpdate(
+    req?.userAuth?._id,
+    {
+      $set: { profilePicture: req?.file?.path },
+    },
+    {
+      new: true,
+    }
+  );
+
+  //? send the response
+  res.json({
+    status: "scuccess",
+    message: "User profile image updated Succesfully",
+    user,
+  });
+});
+
+//@desc   Upload cover image
+//@route  PUT /api/v1/users/upload-cover-image
+//@access Private
+
+exports.uploadeCoverImage = asynchandler(async (req, res) => {
+  // Find the user
+  const userFound = await User.findById(req?.userAuth?._id);
+
+  if (!userFound) {
+    throw new Error("User not found");
+  }
+  const user = await User.findByIdAndUpdate(
+    req?.userAuth?._id,
+    {
+      $set: { coverImage: req?.file?.path },
+    },
+    {
+      new: true,
+    }
+  );
+
+  //? send the response
+  res.json({
+    status: "scuccess",
+    message: "User cover image updated Succesfully",
+    user,
+  });
+});
+
+//@desc   Update username/email
+//@route  PUT /api/v1/users/update-profile
+//@access Private
+
+exports.updateUserProfile = asynchandler(async (req, res) => {
+  //!Check if the post exists
+  const userId = req.userAuth?._id;
+  const userFound = await User.findById(userId);
+  if (!userFound) {
+    throw new Error("User not found");
+  }
+  console.log(userFound);
+  //! image update
+  const { username, email } = req.body;
+  const post = await User.findByIdAndUpdate(
+    userId,
+    {
+      email: email ? email : userFound?.email,
+      username: username ? username : userFound?.username,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(201).json({
+    status: "success",
+    message: "User successfully updated",
+    post,
   });
 });

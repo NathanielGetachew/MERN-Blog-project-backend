@@ -204,7 +204,7 @@ export const addPostActionAction = createAsyncThunk(
       }
     }
       const { data } = await axios.post(
-        "http://localhost:9080/api/v1/posts",
+        "http://localhost:9080/api/v1/posts/",
         formData,
         config
       );
