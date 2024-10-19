@@ -22,13 +22,12 @@ const SendAccVerificationEmail = async (to, ressetToken) => {
       subject: "Account verification ",
       html: `
             <h3> you're receiving this email because you (some one else)have requested to verify your account<h3>
-            <h2>http://localhost:3000/reset-password/${ressetToken}</h2>
+            <h2>http://localhost:3000/Verify_acc/${ressetToken}</h2>
             <h2>If you did not request this reset please ignore this email and no changes  will be made.</h2>
             `,
     };
     // send the email
     const info = await transporter.sendMail(message);
-    console.log("email has been sent", info.messageId);
   } catch (error) {
     console.log(error);
     throw new error("Email sending failed");

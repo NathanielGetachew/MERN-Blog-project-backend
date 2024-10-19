@@ -15,6 +15,7 @@ import PublicUserProfile from "./Component/Users/publicUserProfile";
 import PrivateUserProfile from "./Component/Users/PrivateUserProfile";
 import UploadCoverImage from "./Component/Users/UploadCoverImage";
 import UploadProfileImage from "./Component/Users/UploadProfileImage";
+import AccountVerification from "./Component/Users/AccountVerification";
 
 
 export default function App() {
@@ -106,6 +107,16 @@ export default function App() {
           element={
             <ProtectedRoute>
               <UploadProfileImage />
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        {/*  verify acc */}
+        <Route
+          path="/verify_acc/:token"
+          element={
+            <ProtectedRoute>
+              <AccountVerification />
             </ProtectedRoute>
           }
         ></Route>

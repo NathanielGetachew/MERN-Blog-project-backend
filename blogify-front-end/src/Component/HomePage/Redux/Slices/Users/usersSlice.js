@@ -12,7 +12,9 @@ const INTITIAL_STATE = {
   users: [],
   user: null,
   success:false,
+  isVerified: false,
   profile: {},
+  isEmailSent:false,
   userAuth: {
     error: null,
     userInfo: localStorage.getItem("userInfo")
@@ -272,6 +274,56 @@ export const uploadProfileImageAction = createAsyncThunk(
   }
 );
 
+//! send Acc Verification Email
+export const AccVerificationEmailAction = createAsyncThunk(
+  "users/acc-Verification-email",
+  async (userId, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+       `http://localhost:9080/api/v1/users/accountVerificationEmail`,{},config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+//!  Verify Acc aciton
+export const VerifyAccAction = createAsyncThunk(
+  "users/acc-Verification",
+  async (verifyToken, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.get(
+       `http://localhost:9080/api/v1/users/account-verification/${verifyToken}`,config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 
 
 //! users Slices
@@ -419,30 +471,22 @@ const userSlice = createSlice({
     state.isCoverImageUploaded = false;
   });
 
-    //! Reset Error Action
-    builder.addCase(resetErrorAction.fulfilled,(state)=>{
-      state.error=null;
-    })
+  //follow user
+  builder.addCase(followUserAction.pending, (state, action) => {
+    state.loading = true;
+  });
+  builder.addCase(followUserAction.fulfilled, (state, action) => {
+    state.profile = action.payload;
+    state.success = true;
+    state.loading = false;
+    state.error = null;
+  });
+  builder.addCase(followUserAction.rejected, (state, action) => {
+    state.error = action.payload;
+    state.loading = false;
+  });
 
-    //! Reset Success Action
-    builder.addCase(resetSuccessAction.fulfilled,(state)=>{
-      state.success=false;
-    })
-
-     //follow user
-     builder.addCase(followUserAction.pending, (state, action) => {
-      state.loading = true;
-    });
-    builder.addCase(followUserAction.fulfilled, (state, action) => {
-      state.profile = action.payload;
-      state.success = true;
-      state.loading = false;
-      state.error = null;
-    });
-    builder.addCase(followUserAction.rejected, (state, action) => {
-      state.error = action.payload;
-      state.loading = false;
-    });
+   
     //unfollow user
     builder.addCase(unFollowUserAction.pending, (state, action) => {
       state.loading = true;
@@ -458,6 +502,46 @@ const userSlice = createSlice({
       state.loading = false;
     });
 
+     //send Acc-Verification Email
+    builder.addCase(AccVerificationEmailAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(AccVerificationEmailAction.fulfilled, (state, action) => {
+      state.isEmailSent = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(AccVerificationEmailAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+         //verify Acc
+         builder.addCase(VerifyAccAction.pending, (state, action) => {
+          state.loading = true;
+        });
+        builder.addCase(VerifyAccAction.fulfilled, (state, action) => {
+          state.isVerified = true;
+          state.loading = false;
+          state.error = null;
+        });
+        builder.addCase(VerifyAccAction.rejected, (state, action) => {
+          state.error = action.payload;
+          state.loading = false;
+        });
+
+
+    //! Reset Error Action
+    builder.addCase(resetErrorAction.fulfilled,(state)=>{
+      state.error=null;
+    })
+
+    //! Reset Success Action
+    builder.addCase(resetSuccessAction.fulfilled,(state)=>{
+      state.success=false;
+    })
+
+    
   },
 });
 

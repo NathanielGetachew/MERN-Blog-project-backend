@@ -59,7 +59,7 @@ usersRouter.post("/reset-password/:resetToken", resetPassword);
 //  account verification email
 usersRouter.put("/accountVerificationEmail", isLoggedin,accountVerificationEmail);  
 
-usersRouter.put("/account-verification/:verifyToken", isLoggedin,verifyAccount);
+usersRouter.get("/account-verification/:verifyToken", isLoggedin,verifyAccount);
 
 // upload Cover Image
 usersRouter.put("/upload-cover-image", isLoggedin,upload.single("file"), uploadeCoverImage);

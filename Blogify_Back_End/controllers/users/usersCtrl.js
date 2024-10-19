@@ -72,6 +72,7 @@ exports.login = asynchandler(async (req, res) => {
     role: user?.role,
     token: generateToken(user),
     profilePicture: user?.profilePicture,
+    isVerified: user?.isVerified,
   });
 });
 
@@ -104,7 +105,7 @@ exports.getProfile = asynchandler(async (req, res, next) => {
       path: "profileViewers",
       model: "User",
     });
-    
+
   res.json({
     status: "success",
     message: "Profile fetched",
@@ -396,39 +397,35 @@ exports.accountVerificationEmail = expressAsyncHandler(async (req, res) => {
   });
 });
 
-//  @desc verify token
-// @route post /api/v1/users/verify-account/:verify-token
-// @access private
+// @route   POST /api/v1/users/verify-account/:verifyToken
+// @desc    Verify token
+// @access  Private
 
 exports.verifyAccount = expressAsyncHandler(async (req, res) => {
-  // Get the id/token form email/params
+  //Get the id/token params
   const { verifyToken } = req.params;
-
-  // convert the token to actual token that has been saved in the DB
-  const crypotToken = crypto
+  //Convert the token to actual token that has been saved in the db
+  const cryptoToken = crypto
     .createHash("sha256")
     .update(verifyToken)
     .digest("hex");
-  // find the user by the crypto token
+  //find the user by the crypto token
   const userFound = await User.findOne({
-    accountVerificationToken: crypotToken,
+    accountVerificationToken: cryptoToken,
     accountVerificationExpires: { $gt: Date.now() },
   });
   if (!userFound) {
-    throw new Error("Invalid or expired  account verification Token");
+    throw new Error("Account verification  token is invalid or has expired");
   }
-  // update the user account
+  //Update user account
   userFound.isVerified = true;
-  // emptying the verify-  Token and exry date
-  userFound.accountVerificationToken = undefined;
   userFound.accountVerificationExpires = undefined;
-  // resave the user
+  userFound.accountVerificationToken = undefined;
+  //resave the user
   await userFound.save();
-  // return a success response
-  res.status(200).json({
-    message: "Account Verified succesfully",
-  });
+  res.status(200).json({ message: "Account  successfully verified" });
 });
+
 
 //@desc  Upload profile image
 //@route  PUT /api/v1/users/upload-profile-image
