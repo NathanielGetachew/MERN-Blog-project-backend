@@ -17,10 +17,10 @@ const dispatch = useDispatch();
     username: "Natty Gech",
   });
 
-  //handle form change
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+        //handle form change
+        const handleChange = (e) => {
+          setFormData({ ...formData, [e.target.name]: e.target.value });
+        };
 
   //handle form submit
   const handleSubmit = (e) => {

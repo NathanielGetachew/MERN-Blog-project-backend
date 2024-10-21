@@ -11,14 +11,16 @@ const {
   UnfollowingUser,
   forgotPassword,
   resetPassword,
-  accountVerificationEmail,
+  
   verifyAccount,
   getPublicProfile,
   uploadeCoverImage,
-  uploadeProfilePicture
+  uploadeProfilePicture,
+  accountVerificationEmail
 } = require("../../controllers/users/usersCtrl.js");
 const storage = require("../../utils/fileUpload.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
+
 
 const usersRouter = express.Router();
 // file upload middleware

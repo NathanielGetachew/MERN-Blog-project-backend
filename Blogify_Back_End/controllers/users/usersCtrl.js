@@ -331,7 +331,6 @@ exports.forgotPassword = expressAsyncHandler(async (req, res) => {
 
   // resave the user
   await userFound.save();
-
   // send Email
   sendEmail(email, resetToken);
   res.status(200).json({
@@ -344,59 +343,37 @@ exports.forgotPassword = expressAsyncHandler(async (req, res) => {
 // @route post /api/v1/users/reset-password/:token
 // @access Public
 exports.resetPassword = expressAsyncHandler(async (req, res) => {
-  // Get the id/token form email/params
   const { resetToken } = req.params;
   const { password } = req.body;
-  // convert the token to actual token that has been saved in the DB
-  const crypotToken = crypto
+
+  console.log("Incoming Reset Token:", resetToken);
+
+  const cryptoToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-  // find the user by the crypto token
+
+  console.log("Hashed Reset Token:", cryptoToken);
+
   const userFound = await User.findOne({
-    passwordResetToken: crypotToken,
+    passwordResetToken: cryptoToken,
     passwordResetExpires: { $gt: Date.now() },
   });
+
   if (!userFound) {
-    throw new Error("Invalid or expired password reset Token");
+    console.error("User not found or token expired.");
+    return res.status(400).json({ message: "Password reset token is invalid or has expired" });
   }
-  // update the user password
+
+  // Update the user password
   const salt = await bcrypt.genSalt(10);
   userFound.password = await bcrypt.hash(password, salt);
-  // emptying the resetToken and exry date
-  userFound.passwordResetToken = undefined;
   userFound.passwordResetExpires = undefined;
-  // resave the user
+  userFound.passwordResetToken = undefined;
+
   await userFound.save();
-  // return a success response
-  res.status(200).json({
-    message: "Password reset succesfully",
-  });
+  res.status(200).json({ message: "Password reset successfully" });
 });
-
-//  @desc  account verification
-// @route post /api/v1/users/verify-acc/:token
-// @access private
-exports.accountVerificationEmail = expressAsyncHandler(async (req, res) => {
-  const user = await User.findById(req?.userAuth._id);
-  if (!user) {
-    throw new Error("User not found");
-  }
-  // send the token
-  const token = await user.generateaccountVerificationToken();
-  // resave the user
-  await user.save();
-  // send the email
-  SendAccVerificationEmail(user.email, token);
-  // return a success response
-  res.status(200).json({
-    message:
-      "A verification mail has been sent to your Email " +
-      user.email +
-      " Please ,click on the provided link to verify your account ",
-  });
-});
-
 // @route   POST /api/v1/users/verify-account/:verifyToken
 // @desc    Verify token
 // @access  Private
@@ -424,6 +401,29 @@ exports.verifyAccount = expressAsyncHandler(async (req, res) => {
   //resave the user
   await userFound.save();
   res.status(200).json({ message: "Account  successfully verified" });
+});
+
+
+
+// @route   POST /api/v1/users/account-verification-email/
+// @desc    Send Account verification email
+// @access  Private
+
+exports.accountVerificationEmail = expressAsyncHandler(async (req, res) => {
+  //Find the login user email
+  const user = await User.findById(req?.userAuth?._id);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  //send the token
+  const token = await user.generateaccountVerificationToken();
+  //resave
+  await user.save();
+  //send the email
+  SendAccVerificationEmail(user?.email, token);
+  res.status(200).json({
+    message: `Account verification email sent ${user?.email}`,
+  });
 });
 
 
@@ -512,6 +512,40 @@ exports.updateUserProfile = asynchandler(async (req, res) => {
   res.status(201).json({
     status: "success",
     message: "User successfully updated",
+    post,
+  });
+});
+
+
+// desc Update  user
+// route PUT api/v1/user/update-profile
+//@ access private
+
+exports.updateUserProfile = asynchandler(async (req, res) => {
+  //!Check if the post exists
+  const userId = req.userAuth?._id;
+  const userFound = await User.findById(userId);
+  if (!userFound) {
+    throw new Error("user not found");
+  }
+  //! image update
+  const { title, category, content } = req.body;
+  const post = await Post.findByIdAndUpdate(
+    id,
+    {
+      image: req?.file?.path ? req?.file?.path : postFound?.image,
+      title: title ? title : postFound?.title,
+      category: category ? category : postFound?.category,
+      content: content ? content : postFound?.content,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(201).json({
+    status: "success",
+    message: "post successfully updated",
     post,
   });
 });

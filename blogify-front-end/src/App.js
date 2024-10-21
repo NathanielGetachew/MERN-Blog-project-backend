@@ -16,6 +16,8 @@ import PrivateUserProfile from "./Component/Users/PrivateUserProfile";
 import UploadCoverImage from "./Component/Users/UploadCoverImage";
 import UploadProfileImage from "./Component/Users/UploadProfileImage";
 import AccountVerification from "./Component/Users/AccountVerification";
+import PasswordResetRequest from "./Component/Users/PasswordResetRequest";
+import PasswordReset from "./Component/Users/PasswordReset";
 
 
 export default function App() {
@@ -115,10 +117,22 @@ export default function App() {
         <Route
           path="/verify_acc/:token"
           element={
-            <ProtectedRoute>
+             <ProtectedRoute>
               <AccountVerification />
             </ProtectedRoute>
           }
+        ></Route>
+
+        {/* forgot password */}
+        <Route
+          path="/forgot-password"
+          element={<PasswordResetRequest />}
+        ></Route>
+
+        {/*  password reset */}
+        <Route
+          path="/reset-password/:token"
+          element={<PasswordReset/>}
         ></Route>
 
 

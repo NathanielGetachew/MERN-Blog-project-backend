@@ -13,6 +13,7 @@ const INTITIAL_STATE = {
   user: null,
   success:false,
   isVerified: false,
+  emailMessage:undefined,
   profile: {},
   isEmailSent:false,
   userAuth: {
@@ -324,6 +325,50 @@ export const VerifyAccAction = createAsyncThunk(
   }
 );
 
+//! forgot password Action
+export const forgotPasswordAction = createAsyncThunk(
+  "users/forgotPassword",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const { data } = await axios.post(
+        "http://localhost:9080/api/v1/users/forgot-password",
+        payload
+      );
+      //! save the user into local storage
+      localStorage.setItem("userInfo", JSON.stringify(data));
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
+//! reset password Action
+export const PasswordResetAction = createAsyncThunk(
+  "users/password-reset",
+  async ({ password, resetToken }, { rejectWithValue, getState, dispatch }) => {
+    //make request
+    console.log("Reset Token:", resetToken);
+    console.log("Password:", password);
+    try {
+      const { data } = await axios.post(
+        `http://localhost:9080/api/v1/users/reset-password/${resetToken}`,
+        {
+          password,
+        }
+      );
+      //! save the user into localstorage
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
 
 
 //! users Slices
@@ -529,6 +574,38 @@ const userSlice = createSlice({
           state.error = action.payload;
           state.loading = false;
         });
+
+   //forgot password Acc
+   builder.addCase(forgotPasswordAction.pending, (state, action) => {
+    state.loading = true;
+  });
+  builder.addCase(forgotPasswordAction.fulfilled, (state, action) => {
+    state.isEmailSent = true;
+    state.emailMessage = action.payload;
+    state.loading = false;
+    state.error =  null;
+  });
+  builder.addCase(forgotPasswordAction.rejected, (state, action) => {
+    state.error = action.payload;
+    state.loading = false;
+  });
+
+
+//reset password Acc
+builder.addCase(PasswordResetAction.pending, (state, action) => {
+  state.loading = true;
+});
+builder.addCase(PasswordResetAction.fulfilled, (state, action) => {
+  state.user = action.payload;
+  state.success = true;
+  state.loading = false;
+  state.error =  null;
+});
+builder.addCase(PasswordResetAction.rejected, (state, action) => {
+  state.error = action.payload;
+  state.loading = false;
+});
+
 
 
     //! Reset Error Action
