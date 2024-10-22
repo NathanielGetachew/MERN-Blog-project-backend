@@ -2,20 +2,17 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { resetErrorAction, resetSuccessAction } from "../Global/globalSlice";
 
-
-
-
 // intitialize
 const INTITIAL_STATE = {
   loading: false,
   error: null,
   users: [],
   user: null,
-  success:false,
+  success: false,
   isVerified: false,
-  emailMessage:undefined,
+  emailMessage: undefined,
   profile: {},
-  isEmailSent:false,
+  isEmailSent: false,
   userAuth: {
     error: null,
     userInfo: localStorage.getItem("userInfo")
@@ -33,7 +30,7 @@ export const registerAction = createAsyncThunk(
         "http://localhost:9080/api/v1/users/register",
         payload
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -54,20 +51,17 @@ export const UnblockUserAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-       `http://localhost:9080/api/v1/users/unblock/${userId}`,
-       {},
-       config,
-        
+        `http://localhost:9080/api/v1/users/unblock/${userId}`,
+        {},
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
     }
   }
 );
-
-
 
 //! block use aciton
 export const blockUserAction = createAsyncThunk(
@@ -83,12 +77,11 @@ export const blockUserAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-       `http://localhost:9080/api/v1/users/block/${userId}`,
-       {},
-       config,
-        
+        `http://localhost:9080/api/v1/users/block/${userId}`,
+        {},
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -110,10 +103,10 @@ export const privateProfileAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-       `http://localhost:9080/api/v1/users/profile/`,config,
-        
+        `http://localhost:9080/api/v1/users/profile/`,
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -135,10 +128,10 @@ export const publicProfileAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-       `http://localhost:9080/api/v1/users/public-profile/${userId}`,config,
-        
+        `http://localhost:9080/api/v1/users/public-profile/${userId}`,
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -166,11 +159,11 @@ export const loginAction = createAsyncThunk(
   }
 );
 //! logout action
-export const logoutAction = createAsyncThunk("users/logout",async()=>{
+export const logoutAction = createAsyncThunk("users/logout", async () => {
   // remove token from the localstorage
   localStorage.removeItem("userInfo");
   return true;
-})
+});
 
 //!Follow User Action
 export const followUserAction = createAsyncThunk(
@@ -247,8 +240,6 @@ export const uploadCoverImageAction = createAsyncThunk(
   }
 );
 
-
-
 // ! upload profile image
 export const uploadProfileImageAction = createAsyncThunk(
   "users/upload-profile-image",
@@ -289,10 +280,11 @@ export const AccVerificationEmailAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-       `http://localhost:9080/api/v1/users/accountVerificationEmail`,{},config,
-        
+        `http://localhost:9080/api/v1/users/accountVerificationEmail`,
+        {},
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -314,10 +306,10 @@ export const VerifyAccAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-       `http://localhost:9080/api/v1/users/account-verification/${verifyToken}`,config,
-        
+        `http://localhost:9080/api/v1/users/account-verification/${verifyToken}`,
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -345,29 +337,28 @@ export const forgotPasswordAction = createAsyncThunk(
   }
 );
 
-
 //! reset password Action
 export const PasswordResetAction = createAsyncThunk(
   "users/password-reset",
   async ({ password, resetToken }, { rejectWithValue, getState, dispatch }) => {
-  //make request
-  console.log("Reset Token:", resetToken);
-  console.log("Password:", password);
-  try {
-  const { data } = await axios.post(
-  `http://localhost:9080/api/v1/users/reset-password/${resetToken}`,
-  {
-  password,
+    //make request
+    console.log("Reset Token:", resetToken);
+    console.log("Password:", password);
+    try {
+      const { data } = await axios.post(
+        `http://localhost:9080/api/v1/users/reset-password/${resetToken}`,
+        {
+          password,
+        }
+      );
+      //! save the user into localstorage
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
   }
-  );
-  //! save the user into localstorage
-  localStorage.setItem("userInfo", JSON.stringify(data));
-  return data;
-  } catch (error) {
-  return rejectWithValue(error?.response?.data);
-  }
-  }
-  );
+);
 
 //! update user  profile
 export const updateUserProfileAction = createAsyncThunk(
@@ -383,20 +374,17 @@ export const updateUserProfileAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-       `http://localhost:9080/api/v1/users/update-profile/`,payload,config,
-        
+        `http://localhost:9080/api/v1/users/update-profile/`,
+        payload,
+        config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
     }
   }
 );
-
-
-
-
 
 //! users Slices
 
@@ -471,12 +459,9 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
-     
 
-     
-
-     //get public profile
-     builder.addCase(publicProfileAction.pending, (state, action) => {
+    //get public profile
+    builder.addCase(publicProfileAction.pending, (state, action) => {
       state.loading = true;
     });
     // handle the fulfilled state
@@ -492,8 +477,8 @@ const userSlice = createSlice({
       state.loading = false;
     });
 
-     //get private profile
-     builder.addCase(privateProfileAction.pending, (state, action) => {
+    //get private profile
+    builder.addCase(privateProfileAction.pending, (state, action) => {
       state.loading = true;
     });
     // handle the fulfilled state
@@ -503,62 +488,59 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = null;
     });
-    //* handle the rejection 
+    //* handle the rejection
     builder.addCase(privateProfileAction.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
 
+    //! upload user profile image
+    builder.addCase(uploadProfileImageAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(uploadProfileImageAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.isProfileImgUploaded = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(uploadProfileImageAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+      state.isProfileImgUploaded = false;
+    });
 
-  //! upload user profile image
-   builder.addCase(uploadProfileImageAction.pending, (state, action) => {
-    state.loading = true;
-  });
-  builder.addCase(uploadProfileImageAction.fulfilled, (state, action) => {
-    state.profile = action.payload;
-    state.isProfileImgUploaded = true;
-    state.loading = false;
-    state.error = null;
-  });
-  builder.addCase(uploadProfileImageAction.rejected, (state, action) => {
-    state.error = action.payload;
-    state.loading = false;
-    state.isProfileImgUploaded = false;
-  });
+    //! upload user cover image
+    builder.addCase(uploadCoverImageAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(uploadCoverImageAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.isCoverImageUploaded = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(uploadCoverImageAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+      state.isCoverImageUploaded = false;
+    });
 
+    //follow user
+    builder.addCase(followUserAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(followUserAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(followUserAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-  //! upload user cover image
-  builder.addCase(uploadCoverImageAction.pending, (state, action) => {
-    state.loading = true;
-  });
-  builder.addCase(uploadCoverImageAction.fulfilled, (state, action) => {
-    state.profile = action.payload;
-    state.isCoverImageUploaded = true;
-    state.loading = false;
-    state.error = null;
-  });
-  builder.addCase(uploadCoverImageAction.rejected, (state, action) => {
-    state.error = action.payload;
-    state.loading = false;
-    state.isCoverImageUploaded = false;
-  });
-
-  //follow user
-  builder.addCase(followUserAction.pending, (state, action) => {
-    state.loading = true;
-  });
-  builder.addCase(followUserAction.fulfilled, (state, action) => {
-    state.profile = action.payload;
-    state.success = true;
-    state.loading = false;
-    state.error = null;
-  });
-  builder.addCase(followUserAction.rejected, (state, action) => {
-    state.error = action.payload;
-    state.loading = false;
-  });
-
-   
     //unfollow user
     builder.addCase(unFollowUserAction.pending, (state, action) => {
       state.loading = true;
@@ -574,7 +556,7 @@ const userSlice = createSlice({
       state.loading = false;
     });
 
-     //send Acc-Verification Email
+    //send Acc-Verification Email
     builder.addCase(AccVerificationEmailAction.pending, (state, action) => {
       state.loading = true;
     });
@@ -588,80 +570,76 @@ const userSlice = createSlice({
       state.loading = false;
     });
 
-         //verify Acc
-         builder.addCase(VerifyAccAction.pending, (state, action) => {
-          state.loading = true;
-        });
-        builder.addCase(VerifyAccAction.fulfilled, (state, action) => {
-          state.isVerified = true;
-          state.loading = false;
-          state.error = null;
-        });
-        builder.addCase(VerifyAccAction.rejected, (state, action) => {
-          state.error = action.payload;
-          state.loading = false;
-        });
+    //verify Acc
+    builder.addCase(VerifyAccAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(VerifyAccAction.fulfilled, (state, action) => {
+      state.isVerified = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(VerifyAccAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-   //forgot password Acc
-   builder.addCase(forgotPasswordAction.pending, (state, action) => {
-    state.loading = true;
-  });
-  builder.addCase(forgotPasswordAction.fulfilled, (state, action) => {
-    state.isEmailSent = true;
-    state.emailMessage = action.payload;
-    state.loading = false;
-    state.error =  null;
-  });
-  builder.addCase(forgotPasswordAction.rejected, (state, action) => {
-    state.error = action.payload;
-    state.loading = false;
-  });
+    //forgot password Acc
+    builder.addCase(forgotPasswordAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(forgotPasswordAction.fulfilled, (state, action) => {
+      state.isEmailSent = true;
+      state.emailMessage = action.payload;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(forgotPasswordAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
+    //reset password Acc
+    builder.addCase(PasswordResetAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(PasswordResetAction.fulfilled, (state, action) => {
+      state.user = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    builder.addCase(PasswordResetAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-//reset password Acc
-builder.addCase(PasswordResetAction.pending, (state, action) => {
-  state.loading = true;
-});
-builder.addCase(PasswordResetAction.fulfilled, (state, action) => {
-  state.user = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error =  null;
-});
-builder.addCase(PasswordResetAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
-
-// update profile
-builder.addCase(updateUserProfileAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(updateUserProfileAction.fulfilled, (state, action) => {
-  state.profile = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection 
-builder.addCase(updateUserProfileAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-}); 
-
+    // update profile
+    builder.addCase(updateUserProfileAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(updateUserProfileAction.fulfilled, (state, action) => {
+      state.profile = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(updateUserProfileAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
     //! Reset Error Action
-    builder.addCase(resetErrorAction.fulfilled,(state)=>{
-      state.error=null;
-    })
+    builder.addCase(resetErrorAction.fulfilled, (state) => {
+      state.error = null;
+    });
 
     //! Reset Success Action
-    builder.addCase(resetSuccessAction.fulfilled,(state)=>{
-      state.success=false;
-    })
-
-    
+    builder.addCase(resetSuccessAction.fulfilled, (state) => {
+      state.success = false;
+    });
   },
 });
 

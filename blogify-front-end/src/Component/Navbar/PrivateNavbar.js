@@ -5,8 +5,7 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 import { logoutAction } from "../HomePage/Redux/Slices/Users/usersSlice";
 import { useDispatch, useSelector } from "react-redux";
-import {FaBlog} from "react-icons/fa"
-
+import { FaBlog } from "react-icons/fa";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -15,14 +14,14 @@ function classNames(...classes) {
 export default function PrivateNavbar() {
   const dispatch = useDispatch();
 
-  const {userAuth} = useSelector((state)=>state?.users) 
-  const logoutHandler = ()=>{
-    dispatch(logoutAction())
-    
+  const { userAuth } = useSelector((state) => state?.users);
+  const logoutHandler = () => {
+    dispatch(logoutAction());
+
     window.location.reload();
-  }
-  // reload the page upon 
-  
+  };
+  // reload the page upon
+
   return (
     <Disclosure as="nav" className="bg-white shadow">
       {({ open }) => (
@@ -42,10 +41,9 @@ export default function PrivateNavbar() {
                   </Disclosure.Button>
                 </div>
                 <div className="flex flex-shrink-0 items-center">
-                  
-                 <FaBlog className="block text-green-500 h-8 w-auto lg:hidden"/>
+                  <FaBlog className="block text-green-500 h-8 w-auto lg:hidden" />
 
-                  <FaBlog className="hidden text-green-500 h-8 w-auto lg:block"/>
+                  <FaBlog className="hidden text-green-500 h-8 w-auto lg:block" />
                 </div>
                 <div className="hidden md:ml-6 md:flex md:space-x-8">
                   {/* Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" */}
@@ -61,7 +59,6 @@ export default function PrivateNavbar() {
                   >
                     Posts
                   </Link>
-                  
                 </div>
               </div>
               <div className="flex items-center">
@@ -75,7 +72,6 @@ export default function PrivateNavbar() {
                   </Link>
                 </div>
                 <div className="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-                  
                   {/* Profile dropdown */}
                   <Menu as="div" className="relative ml-3">
                     <div>
@@ -115,7 +111,7 @@ export default function PrivateNavbar() {
                           {({ active }) => (
                             <Link
                               to="/update-profile"
-                               className={classNames(
+                              className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
                               )}
@@ -127,7 +123,7 @@ export default function PrivateNavbar() {
                         <Menu.Item>
                           {({ active }) => (
                             <button
-                            onClick ={logoutHandler} 
+                              onClick={logoutHandler}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
                                 "block px-4 py-2 text-sm text-gray-700"
