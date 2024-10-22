@@ -66,13 +66,24 @@ exports.getPosts = asynchandler(async (req, res) => {
 
   // extract the ids of the user who have blocked the login user
   const blockedUserIds = usersBlokingLoggedInUser?.map((user) => user._id);
-  const query = {
+//! get category, serachkeyword from the request
+const category = req.query.category;
+const searchTerm = req.query.searchTerm;
+
+  let query = {
     author: { $nin: blockedUserIds },
     $or: [
-      { scheduledPublished: { $lte: currentTime }, scheduledPublished: null },
+      { scheduledPublished: { $lte: currentTime }, 
+      scheduledPublished: null },
     ],
   };
-
+//! check if category/searchterm is specified, then add to the query
+if (category) {
+  query.category = category;
+}
+if (searchTerm) {
+  query.title = {$regex: searchTerm,$options: "i"};
+}
   const posts = await Post.find(query).populate({
     path: "author",
     model: "User",
