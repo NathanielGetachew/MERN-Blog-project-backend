@@ -346,14 +346,10 @@ exports.resetPassword = expressAsyncHandler(async (req, res) => {
   const { resetToken } = req.params;
   const { password } = req.body;
 
-  console.log("Incoming Reset Token:", resetToken);
-
   const cryptoToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
-  console.log("Hashed Reset Token:", cryptoToken);
 
   const userFound = await User.findOne({
     passwordResetToken: cryptoToken,
@@ -489,13 +485,13 @@ exports.uploadeCoverImage = asynchandler(async (req, res) => {
 //@access Private
 
 exports.updateUserProfile = asynchandler(async (req, res) => {
-  //!Check if the post exists
+  //!Check if the user exists
   const userId = req.userAuth?._id;
   const userFound = await User.findById(userId);
   if (!userFound) {
     throw new Error("User not found");
   }
-  console.log(userFound);
+  
   //! image update
   const { username, email } = req.body;
   const post = await User.findByIdAndUpdate(
@@ -517,35 +513,4 @@ exports.updateUserProfile = asynchandler(async (req, res) => {
 });
 
 
-// desc Update  user
-// route PUT api/v1/user/update-profile
-//@ access private
 
-exports.updateUserProfile = asynchandler(async (req, res) => {
-  //!Check if the post exists
-  const userId = req.userAuth?._id;
-  const userFound = await User.findById(userId);
-  if (!userFound) {
-    throw new Error("user not found");
-  }
-  //! image update
-  const { title, category, content } = req.body;
-  const post = await Post.findByIdAndUpdate(
-    id,
-    {
-      image: req?.file?.path ? req?.file?.path : postFound?.image,
-      title: title ? title : postFound?.title,
-      category: category ? category : postFound?.category,
-      content: content ? content : postFound?.content,
-    },
-    {
-      new: true,
-      runValidators: true,
-    }
-  );
-  res.status(201).json({
-    status: "success",
-    message: "post successfully updated",
-    post,
-  });
-});

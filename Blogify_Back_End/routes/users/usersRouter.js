@@ -16,7 +16,8 @@ const {
   getPublicProfile,
   uploadeCoverImage,
   uploadeProfilePicture,
-  accountVerificationEmail
+  accountVerificationEmail,
+  updateUserProfile
 } = require("../../controllers/users/usersCtrl.js");
 const storage = require("../../utils/fileUpload.js");
 isLoggedin = require("../../middlewares/isLoggedin.js");
@@ -69,6 +70,8 @@ usersRouter.put("/upload-cover-image", isLoggedin,upload.single("file"), uploade
 // upload  profile Image
 usersRouter.put("/upload-profile-image",isLoggedin,upload.single("file"),uploadeProfilePicture);
 
+//  update  profile
+usersRouter.put("/update-profile:", isLoggedin, updateUserProfile);
 
 
 

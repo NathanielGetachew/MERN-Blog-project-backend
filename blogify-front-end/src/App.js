@@ -18,6 +18,7 @@ import UploadProfileImage from "./Component/Users/UploadProfileImage";
 import AccountVerification from "./Component/Users/AccountVerification";
 import PasswordResetRequest from "./Component/Users/PasswordResetRequest";
 import PasswordReset from "./Component/Users/PasswordReset";
+import UpdateUser from "./Component/Users/UpdateUser";
 
 
 export default function App() {
@@ -134,6 +135,17 @@ export default function App() {
           path="/reset-password/:token"
           element={<PasswordReset/>}
         ></Route>
+
+      {/*  update profile */}
+      <Route
+          path="update-profile"
+          element={
+            <ProtectedRoute>
+              <UpdateUser/>
+            </ProtectedRoute>
+          }
+        ></Route>
+
 
 
       </Routes>
