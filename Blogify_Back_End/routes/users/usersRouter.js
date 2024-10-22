@@ -71,7 +71,7 @@ usersRouter.put("/upload-cover-image", isLoggedin,upload.single("file"), uploade
 usersRouter.put("/upload-profile-image",isLoggedin,upload.single("file"),uploadeProfilePicture);
 
 //  update  profile
-usersRouter.put("/update-profile:", isLoggedin, updateUserProfile);
+usersRouter.put("/update-profile", isLoggedin, updateUserProfile);
 
 
 

@@ -355,7 +355,7 @@ export const PasswordResetAction = createAsyncThunk(
   console.log("Password:", password);
   try {
   const { data } = await axios.post(
-  http://localhost:9080/api/v1/users/reset-password/${resetToken},
+  `http://localhost:9080/api/v1/users/reset-password/${resetToken}`,
   {
   password,
   }
@@ -369,9 +369,30 @@ export const PasswordResetAction = createAsyncThunk(
   }
   );
 
+//! update user  profile
+export const updateUserProfileAction = createAsyncThunk(
+  "users/update-profile",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    // make request
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
 
-
-
+      const { data } = await axios.put(
+       `http://localhost:9080/api/v1/users/update-profile/`,payload,config,
+        
+      );
+    
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
 
 
 
@@ -612,6 +633,22 @@ builder.addCase(PasswordResetAction.rejected, (state, action) => {
   state.loading = false;
 });
 
+// update profile
+builder.addCase(updateUserProfileAction.pending, (state, action) => {
+  state.loading = true;
+});
+// handle the fulfilled state
+builder.addCase(updateUserProfileAction.fulfilled, (state, action) => {
+  state.profile = action.payload;
+  state.success = true;
+  state.loading = false;
+  state.error = null;
+});
+//* handle the rejection 
+builder.addCase(updateUserProfileAction.rejected, (state, action) => {
+  state.error = action.payload;
+  state.loading = false;
+}); 
 
 
     //! Reset Error Action

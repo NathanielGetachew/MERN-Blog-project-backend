@@ -73,7 +73,7 @@ export const PasswordReset = () => {
           <button className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none">
             Reset Password
           </button>
-        )}
+        )}      
       </div>
     </form>
   );
