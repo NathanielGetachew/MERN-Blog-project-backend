@@ -347,7 +347,27 @@ export const forgotPasswordAction = createAsyncThunk(
 
 
 //! reset password Action
-
+export const PasswordResetAction = createAsyncThunk(
+  "users/password-reset",
+  async ({ password, resetToken }, { rejectWithValue, getState, dispatch }) => {
+  //make request
+  console.log("Reset Token:", resetToken);
+  console.log("Password:", password);
+  try {
+  const { data } = await axios.post(
+  http://localhost:9080/api/v1/users/reset-password/${resetToken},
+  {
+  password,
+  }
+  );
+  //! save the user into localstorage
+  localStorage.setItem("userInfo", JSON.stringify(data));
+  return data;
+  } catch (error) {
+  return rejectWithValue(error?.response?.data);
+  }
+  }
+  );
 
 
 
