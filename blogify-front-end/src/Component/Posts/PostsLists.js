@@ -1,6 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPrivatePostsAction, fetchPublicPostsAction } from "../HomePage/Redux/Slices/Posts/PostSlice ";
+import {
+  fetchPrivatePostsAction,
+  fetchPublicPostsAction,
+} from "../HomePage/Redux/Slices/Posts/PostSlice ";
 import { Link } from "react-router-dom";
 import LoadingComponent from "../Alert/LoadingComponent";
 
@@ -12,10 +15,15 @@ const PostsLists = () => {
   );
 
   const { userAuth } = useSelector((state) => state?.users);
+  const [page, setPage] = useState(2);
   // dispatch
   useEffect(() => {
-    dispatch(fetchPrivatePostsAction());
-  }, [dispatch]);
+    dispatch(fetchPrivatePostsAction({ page, limit: 4 }));
+  }, [dispatch, page]);
+
+  const handleNext = () => setPage(page + 1)
+  const handleprev = () => setPage(page > 1 ? page -1: 1)
+
 
   return (
     <>
@@ -80,9 +88,7 @@ const PostsLists = () => {
                       >
                         {post?.title}
                       </a>
-                      <p className="mb-4 text-coolGray-500">
-                        {(post?.content)}
-                      </p>
+                      <p className="mb-4 text-coolGray-500">{post?.content}</p>
                       <Link
                         className="inline-flex items-center text-base md:text-lg text-green-500 hover:text-green-600 font-semibold"
                         to={`/posts/${post?._id}`}
@@ -106,8 +112,25 @@ const PostsLists = () => {
                 })
               )}
             </div>
-          </div>  
+          </div>
         </section>
+        {/* pagintion */}
+        
+        <div className="flex justify-center items-center my-4 space-x-2">
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleprev}
+          >
+            Prev
+          </button>
+          <button
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            onClick={handleNext}
+          >
+            Next
+          </button>
+        </div>
+        
       </div>
     </>
   );

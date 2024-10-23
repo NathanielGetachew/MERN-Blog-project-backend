@@ -32,7 +32,7 @@ export const fetchPublicPostsAction = createAsyncThunk(
 //! Fetch Private posts
 export const fetchPrivatePostsAction = createAsyncThunk(
   "posts/fetch-private-posts",
-  async (payload, { rejectWithValue, getState, dispatch }) => {
+  async ({page = 1,limit = 4}, { rejectWithValue, getState, dispatch }) => {
     // make request
     
     try {
@@ -44,7 +44,7 @@ export const fetchPrivatePostsAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        "http://localhost:9080/api/v1/posts",config
+        `http://localhost:9080/api/v1/posts?page=${page}&limit=${limit}`,config
       );
 
       return data;

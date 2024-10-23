@@ -66,33 +66,52 @@ exports.getPosts = asynchandler(async (req, res) => {
 
   // extract the ids of the user who have blocked the login user
   const blockedUserIds = usersBlokingLoggedInUser?.map((user) => user._id);
-//! get category, serachkeyword from the request
-const category = req.query.category;
-const searchTerm = req.query.searchTerm;
+  //! get category, serachkeyword from the request
+  const category = req.query.category;
+  const searchTerm = req.query.searchTerm;
 
   let query = {
     author: { $nin: blockedUserIds },
     $or: [
-      { scheduledPublished: { $lte: currentTime }, 
-      scheduledPublished: null },
+      { scheduledPublished: { $lte: currentTime }, scheduledPublished: null },
     ],
   };
-//! check if category/searchterm is specified, then add to the query
-if (category) {
-  query.category = category;
-}
-if (searchTerm) {
-  query.title = {$regex: searchTerm,$options: "i"};
-}
+  //! check if category/searchterm is specified, then add to the query
+  if (category) {
+    query.category = category;
+  }
+  if (searchTerm) {
+    query.title = { $regex: searchTerm, $options: "i" };
+  }
+  // pagination parameter from the request
+  const page = parseInt(req.query.page,10) || 1
+  const limit = parseInt(req.query.page,10) || 5
+  const startingIndex = (page -1)*limit
+  const endIndex = (page * limit)
+  const total = await Post.countDocuments(query)
   const posts = await Post.find(query).populate({
     path: "author",
     model: "User",
     select: "email role username",
-  });
-
+  }).populate("category").skip(startingIndex).limit(limit)
+ // pagination result
+const pagination = {} 
+if(endIndex < total){
+  pagination.next = {
+    page: page + 1,
+    limit,
+  }
+}
+if(startingIndex > 0){
+  pagination.prev = {
+    page: page - 1, 
+    limit,
+  }
+}
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
+    pagination,
     posts,
   });
 });
@@ -101,14 +120,17 @@ if (searchTerm) {
 // @route GET /api/v1/posts:id
 // @access Public
 exports.getPost = asynchandler(async (req, res) => {
-  const post = await Post.findById(req.params.id).populate("author").populate("category").populate({
-    path:"comments",
-    model: "Comment",
-    populate:{
-      path: "author",
-      select:"username"
-    }
-  });
+  const post = await Post.findById(req.params.id)
+    .populate("author")
+    .populate("category")
+    .populate({
+      path: "comments",
+      model: "Comment",
+      populate: {
+        path: "author",
+        select: "username",
+      },
+    });
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
@@ -136,9 +158,10 @@ exports.getPublicPosts = asynchandler(async (req, res) => {
 exports.deletePost = asynchandler(async (req, res) => {
   //! find the post
   const postFound = await Post.findById(req.params.id);
-  const IsAuthor = req.userAuth?._id.toString() === postFound?.author?._id.toString();
-  if(!IsAuthor){
-     throw new Error("Action denied, you are not the creator of this post") 
+  const IsAuthor =
+    req.userAuth?._id.toString() === postFound?.author?._id.toString();
+  if (!IsAuthor) {
+    throw new Error("Action denied, you are not the creator of this post");
   }
 
   await Post.findByIdAndDelete(req.params.id);
@@ -197,7 +220,7 @@ exports.likePost = expressAsyncHandler(async (req, res) => {
     throw new Error("Post not found!");
   }
   // // check if the user has already liked the post
-  
+
   await Post.findByIdAndUpdate(
     id,
     {
@@ -215,7 +238,7 @@ exports.likePost = expressAsyncHandler(async (req, res) => {
   });
 });
 
-// desc post view count 
+// desc post view count
 // route PUT api/v1/posts/:id/post-views-count
 //@ access private
 
@@ -230,7 +253,7 @@ exports.postViewCount = expressAsyncHandler(async (req, res) => {
     throw new Error("Post not found!");
   }
   // // check if the user has already liked the post
-  
+
   await Post.findByIdAndUpdate(
     id,
     {
@@ -238,14 +261,12 @@ exports.postViewCount = expressAsyncHandler(async (req, res) => {
     },
     { new: true }
   ).populate("author");
- 
-  
+
   await post.save();
   res.status(200).json({
     message: "Post viewed succesfully",
   });
 });
-
 
 // desc disliking a  post
 // route PUT api/v1/post/dislikes/:id
@@ -261,7 +282,7 @@ exports.dislikePost = expressAsyncHandler(async (req, res) => {
   if (!post) {
     throw new Error("Post not found!");
   }
-   await Post.findByIdAndUpdate(
+  await Post.findByIdAndUpdate(
     id,
     {
       $addToSet: { dislikes: userId },
@@ -341,4 +362,3 @@ exports.schedule = expressAsyncHandler(async (req, res) => {
 // desc scheduling a  post
 // route PUT api/v1/post/schedule/:id
 //@ access private
-
