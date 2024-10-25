@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { resetErrorAction, resetSuccessAction } from "../Global/globalSlice";
+import BASE_URL from "../../../../../utils/baseURL";
+
 
 // intitialize
 const INTITIAL_STATE = {
@@ -11,6 +13,7 @@ const INTITIAL_STATE = {
   success: false,
 };
 
+
 //! Fetch categories
 
 export const fetchCategoriesAction = createAsyncThunk(
@@ -19,7 +22,7 @@ export const fetchCategoriesAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.get(
-        "http://localhost:9080/api/v1/categories"
+        `${BASE_URL}/categories`
       );
 
       return data;

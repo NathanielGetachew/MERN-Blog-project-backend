@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { resetErrorAction, resetSuccessAction } from "../Global/globalSlice";
+import BASE_URL from "../../../../../utils/baseURL";
+ 
 
 // intitialize
 const INTITIAL_STATE = {
@@ -20,6 +22,7 @@ const INTITIAL_STATE = {
       : null,
   },
 };
+
 //! Register user Action
 export const registerAction = createAsyncThunk(
   "users/register",
@@ -27,7 +30,7 @@ export const registerAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.post(
-        "http://localhost:9080/api/v1/users/register",
+        `${BASE_URL}/users/register`,
         payload
       );
 
@@ -51,7 +54,7 @@ export const UnblockUserAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/unblock/${userId}`,
+        `${BASE_URL}/users/unblock/${userId}`,
         {},
         config
       );
@@ -77,7 +80,7 @@ export const blockUserAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/block/${userId}`,
+        `${BASE_URL}/users/block/${userId}`,
         {},
         config
       );
@@ -103,7 +106,7 @@ export const privateProfileAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        `http://localhost:9080/api/v1/users/profile/`,
+        `${BASE_URL}/users/profile/`,
         config
       );
 
@@ -146,7 +149,7 @@ export const loginAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.post(
-        "http://localhost:9080/api/v1/users/login",
+        `${BASE_URL}/users/login`,
         payload
       );
       //! save the user into local storage
@@ -178,7 +181,7 @@ export const followUserAction = createAsyncThunk(
         },
       };
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/Following/${userId}`,
+        `${BASE_URL}/users/Following/${userId}`,
         {},
         config
       );
@@ -202,7 +205,7 @@ export const unFollowUserAction = createAsyncThunk(
         },
       };
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/UnFollowing/${userId}`,
+        `${BASE_URL}/users/UnFollowing/${userId}`,
         {},
         config
       );
@@ -229,7 +232,7 @@ export const uploadCoverImageAction = createAsyncThunk(
         },
       };
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/upload-cover-image`,
+        `${BASE_URL}/users/upload-cover-image`,
         formData,
         config
       );
@@ -255,7 +258,7 @@ export const uploadProfileImageAction = createAsyncThunk(
         },
       };
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/upload-profile-image`,
+        `${BASE_URL}/users/upload-profile-image`,
         formData,
         config
       );
@@ -280,7 +283,7 @@ export const AccVerificationEmailAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/accountVerificationEmail`,
+        `${BASE_URL}/users/accountVerificationEmail`,
         {},
         config
       );
@@ -306,7 +309,7 @@ export const VerifyAccAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        `http://localhost:9080/api/v1/users/account-verification/${verifyToken}`,
+        `${BASE_URL}/users/account-verification/${verifyToken}`,
         config
       );
 
@@ -324,7 +327,7 @@ export const forgotPasswordAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.post(
-        "http://localhost:9080/api/v1/users/forgot-password",
+        `${BASE_URL}/users/forgot-password`,
         payload
       );
       //! save the user into local storage
@@ -346,7 +349,7 @@ export const PasswordResetAction = createAsyncThunk(
     console.log("Password:", password);
     try {
       const { data } = await axios.post(
-        `http://localhost:9080/api/v1/users/reset-password/${resetToken}`,
+        `${BASE_URL}/users/reset-password/${resetToken}`,
         {
           password,
         }
@@ -374,7 +377,7 @@ export const updateUserProfileAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/users/update-profile/`,
+        `${BASE_URL}/users/update-profile/`,
         payload,
         config
       );

@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { resetErrorAction, resetSuccessAction } from "../Global/globalSlice";
+import BASE_URL from "../../../../../utils/baseURL";
+
 
 // intitialize
 const INTITIAL_STATE = {
@@ -20,7 +22,7 @@ export const fetchPublicPostsAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.get(
-        "http://localhost:9080/api/v1/posts/home/public"
+        `${BASE_URL}/posts/home/public`
       );
 
       return data;
@@ -47,7 +49,7 @@ export const fetchPrivatePostsAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        `http://localhost:9080/api/v1/posts?page=${page}&limit=${limit}&searchTerm=${searchTerm}&category=${category}`,
+        `${BASE_URL}/posts?page=${page}&limit=${limit}&searchTerm=${searchTerm}&category=${category}`,
         config
       );
 
@@ -73,7 +75,7 @@ export const deletePostsAction = createAsyncThunk(
       };
 
       const { data } = await axios.delete(
-        `http://localhost:9080/api/v1/posts/${postId}`,
+        `${BASE_URL}/posts/${postId}`,
         config
       );
 
@@ -99,7 +101,7 @@ export const postViewCountAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/${postId}/post-views-count`,
+        `${BASE_URL}/posts/${postId}/post-views-count`,
         {},
         config
       );
@@ -126,7 +128,7 @@ export const likePostAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/likes/${postId}`,
+        `${BASE_URL}/posts/likes/${postId}`,
         {},
         config
       );
@@ -153,7 +155,7 @@ export const dislikePostAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/dislikes/${postId}`,
+        `${BASE_URL}/posts/dislikes/${postId}`,
         {},
         config
       );
@@ -180,7 +182,7 @@ export const clapPostAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/claps/${postId}`,
+        `${BASE_URL}/posts/claps/${postId}`,
         {},
         config
       );
@@ -210,7 +212,7 @@ export const addPostActionAction = createAsyncThunk(
         },
       };
       const { data } = await axios.post(
-        "http://localhost:9080/api/v1/posts/",
+       `${BASE_URL}/posts/`,
         formData,
         config
       );
@@ -240,7 +242,7 @@ export const updatePostAction = createAsyncThunk(
         },
       };
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/${payload?.postId}`,
+        `${BASE_URL}/posts/${payload?.postId}`,
         formData,
         config
       );
@@ -259,7 +261,7 @@ export const getPostAction = createAsyncThunk(
     // make request
     try {
       const { data } = await axios.get(
-        `http://localhost:9080/api/v1/posts/${postId}`
+        `${BASE_URL}/posts/${postId}`
       );
 
       return data;
@@ -284,7 +286,7 @@ export const schedulePostAction = createAsyncThunk(
       };
 
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/schedule/${postId}`,
+        `${BASE_URL}/posts/schedule/${postId}`,
         {
           sheduledPublished,
         },
