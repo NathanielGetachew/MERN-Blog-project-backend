@@ -6,6 +6,7 @@ import {
 } from "../HomePage/Redux/Slices/Posts/PostSlice ";
 import { Link } from "react-router-dom";
 import LoadingComponent from "../Alert/LoadingComponent";
+import { fetchCategoriesAction } from "../HomePage/Redux/Slices/Categories/category Slice";
 
 const PostsLists = () => {
   // //! redux store
@@ -15,15 +16,28 @@ const PostsLists = () => {
   );
 
   const { userAuth } = useSelector((state) => state?.users);
-  const [page, setPage] = useState(2);
-  // dispatch
+  // pagination/search states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [category, setCategory] = useState("");
+  
+  // dispatch fetching post
+  
   useEffect(() => {
-    dispatch(fetchPrivatePostsAction({ page, limit: 4 }));
-  }, [dispatch, page]);
+    dispatch(fetchPrivatePostsAction({ page, limit: 4, searchTerm, category }));
+    dispatch(fetchCategoriesAction());
+  }, 
+ [dispatch, page, searchTerm,category]);
 
-  const handleNext = () => setPage(page + 1)
-  const handleprev = () => setPage(page > 1 ? page -1: 1)
+  
+  
 
+  const { categories} = useSelector(
+    (state) => state?.categories
+  );
+  
+  const handleNext = () => setPage(page + 1);
+  const handleprev = () => setPage(page > 1 ? page - 1 : 1);
 
   return (
     <>
@@ -46,8 +60,30 @@ const PostsLists = () => {
               <h3 className="mb-4 text-3xl md:text-5xl leading-tight text-darkCoolGray-900 font-bold tracking-tighter">
                 Read our Trending Articles
               </h3>
+             {/* Search input */}
+             <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Search by title..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              </div>
             </div>
-
+            {/* Categories */}
+            <div className="flex flex-wrap justify-center mb-4">
+              {categories?.categories?.map((cat) => (
+                <button
+                  key={cat._id}
+                  onClick={() => setCategory(cat._id)}
+                  className="mx-2 my-2 px-4 py-2 text-white bg-gradient-to-r from-green-500 to-blue-500  rounded"
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+/
             <div className="flex flex-wrap -mx-4 mb-12 md:mb-20">
               {/* loop */}
               {loading ? (
@@ -108,14 +144,14 @@ const PostsLists = () => {
                         </svg>
                       </Link>
                     </Link>
-                  );
+                  )
                 })
               )}
             </div>
           </div>
         </section>
         {/* pagintion */}
-        
+
         <div className="flex justify-center items-center my-4 space-x-2">
           <button
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -130,7 +166,6 @@ const PostsLists = () => {
             Next
           </button>
         </div>
-        
       </div>
     </>
   );

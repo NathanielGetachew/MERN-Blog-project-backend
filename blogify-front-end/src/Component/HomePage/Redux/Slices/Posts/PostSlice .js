@@ -11,7 +11,7 @@ const INTITIAL_STATE = {
   post: null,
   success: false,
 };
-  
+
 //! Fetch Public posts
 
 export const fetchPublicPostsAction = createAsyncThunk(
@@ -32,9 +32,9 @@ export const fetchPublicPostsAction = createAsyncThunk(
 //! Fetch Private posts
 export const fetchPrivatePostsAction = createAsyncThunk(
   "posts/fetch-private-posts",
-  async ({page = 1,limit = 4}, { rejectWithValue, getState, dispatch }) => {
+  async ({ page = 1, limit = 4,searchTerm = "", category= ""}, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
+
     try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
@@ -44,7 +44,8 @@ export const fetchPrivatePostsAction = createAsyncThunk(
       };
 
       const { data } = await axios.get(
-        `http://localhost:9080/api/v1/posts?page=${page}&limit=${limit}`,config
+        `http://localhost:9080/api/v1/posts?page=${page}&limit=${limit}&searchTerm=${searchTerm}&category=${category}`,
+        config
       );
 
       return data;
@@ -59,18 +60,18 @@ export const deletePostsAction = createAsyncThunk(
   "posts/delete-post",
   async (postId, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
-    try {
 
+    try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       const { data } = await axios.delete(
-        `http://localhost:9080/api/v1/posts/${postId}`,config
+        `http://localhost:9080/api/v1/posts/${postId}`,
+        config
       );
 
       return data;
@@ -85,18 +86,19 @@ export const postViewCountAction = createAsyncThunk(
   "posts/post-views",
   async (postId, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
-    try {
 
+    try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/${postId}/post-views-count`,{},config
+        `http://localhost:9080/api/v1/posts/${postId}/post-views-count`,
+        {},
+        config
       );
 
       return data;
@@ -111,18 +113,19 @@ export const likePostAction = createAsyncThunk(
   "posts/like",
   async (postId, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
-    try {
 
+    try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/likes/${postId}`,{},config
+        `http://localhost:9080/api/v1/posts/likes/${postId}`,
+        {},
+        config
       );
 
       return data;
@@ -137,18 +140,19 @@ export const dislikePostAction = createAsyncThunk(
   "posts/dislike",
   async (postId, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
-    try {
 
+    try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/dislikes/${postId}`,{},config
+        `http://localhost:9080/api/v1/posts/dislikes/${postId}`,
+        {},
+        config
       );
 
       return data;
@@ -163,18 +167,19 @@ export const clapPostAction = createAsyncThunk(
   "posts/clap",
   async (postId, { rejectWithValue, getState, dispatch }) => {
     // make request
-    
-    try {
 
+    try {
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       };
-      
+
       const { data } = await axios.put(
-        `http://localhost:9080/api/v1/posts/claps/${postId}`,{},config
+        `http://localhost:9080/api/v1/posts/claps/${postId}`,
+        {},
+        config
       );
 
       return data;
@@ -184,31 +189,29 @@ export const clapPostAction = createAsyncThunk(
   }
 );
 
-
 //! create post
 export const addPostActionAction = createAsyncThunk(
   "post/create",
-  async (payload, { rejectWithValue, getState, dispatch }) => { 
-    
+  async (payload, { rejectWithValue, getState, dispatch }) => {
     try {
       // convert the payload to formData
-   const formData = new FormData();
-   formData.append("title",payload?.title)
-   formData.append("content",payload?.content)
-   formData.append("categoryId",payload?.category)
-   formData.append("file",payload?.image)
+      const formData = new FormData();
+      formData.append("title", payload?.title);
+      formData.append("content", payload?.content);
+      formData.append("categoryId", payload?.category);
+      formData.append("file", payload?.image);
       const token = getState().users?.userAuth?.userInfo?.token;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-      }
-    }
+        },
+      };
       const { data } = await axios.post(
         "http://localhost:9080/api/v1/posts/",
         formData,
         config
       );
-    
+
       return data;
     } catch (error) {
       return rejectWithValue(error?.response?.data);
@@ -245,7 +248,6 @@ export const updatePostAction = createAsyncThunk(
   }
 );
 
-
 //! Fetch single post
 
 export const getPostAction = createAsyncThunk(
@@ -264,10 +266,6 @@ export const getPostAction = createAsyncThunk(
   }
 );
 
-
-
-
-
 const PostSlice = createSlice({
   name: "posts",
   initialState: INTITIAL_STATE,
@@ -279,7 +277,7 @@ const PostSlice = createSlice({
     // handle the fulfilled state
     builder.addCase(fetchPublicPostsAction.fulfilled, (state, action) => {
       state.posts = action.payload;
-     state.loading = false;
+      state.loading = false;
       state.error = null;
     });
     //* handle the rejection
@@ -288,25 +286,23 @@ const PostSlice = createSlice({
       state.loading = false;
     });
 
-//! fetch private posts
-builder.addCase(fetchPrivatePostsAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(fetchPrivatePostsAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(fetchPrivatePostsAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! fetch private posts
+    builder.addCase(fetchPrivatePostsAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(fetchPrivatePostsAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(fetchPrivatePostsAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-
-    
-    //! add post 
+    //! add post
     builder.addCase(addPostActionAction.pending, (state, action) => {
       state.loading = true;
     });
@@ -322,126 +318,123 @@ builder.addCase(fetchPrivatePostsAction.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
-   
-//! get single posts
-builder.addCase(getPostAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(getPostAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(getPostAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
 
-//! delete post
-builder.addCase(deletePostsAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(deletePostsAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(deletePostsAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
-//! udpate post
-builder.addCase(updatePostAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(updatePostAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(updatePostAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! get single posts
+    builder.addCase(getPostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(getPostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(getPostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-//! like post
-builder.addCase(likePostAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(likePostAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(likePostAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! delete post
+    builder.addCase(deletePostsAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(deletePostsAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(deletePostsAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+    //! udpate post
+    builder.addCase(updatePostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(updatePostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(updatePostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-//! dislike post
-builder.addCase(dislikePostAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(dislikePostAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(dislikePostAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! like post
+    builder.addCase(likePostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(likePostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(likePostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-//! clap post
-builder.addCase(clapPostAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(clapPostAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(clapPostAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! dislike post
+    builder.addCase(dislikePostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(dislikePostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(dislikePostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-//! view a  post
-builder.addCase(postViewCountAction.pending, (state, action) => {
-  state.loading = true;
-});
-// handle the fulfilled state
-builder.addCase(postViewCountAction.fulfilled, (state, action) => {
-  state.posts = action.payload;
-  state.success = true;
-  state.loading = false;
-  state.error = null;
-});
-//* handle the rejection
-builder.addCase(postViewCountAction.rejected, (state, action) => {
-  state.error = action.payload;
-  state.loading = false;
-});
+    //! clap post
+    builder.addCase(clapPostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(clapPostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(clapPostAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
-
-
+    //! view a  post
+    builder.addCase(postViewCountAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(postViewCountAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(postViewCountAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
 
     //! Reset Error Action
     builder.addCase(resetErrorAction.fulfilled, (state) => {
@@ -454,10 +447,6 @@ builder.addCase(postViewCountAction.rejected, (state, action) => {
     });
   },
 });
-
-
-
-
 
 //! Generate Reducers
 const postReducer = PostSlice.reducer;

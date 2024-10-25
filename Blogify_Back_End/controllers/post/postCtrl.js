@@ -85,9 +85,9 @@ exports.getPosts = asynchandler(async (req, res) => {
   }
   // pagination parameter from the request
   const page = parseInt(req.query.page,10) || 1
-  const limit = parseInt(req.query.page,10) || 5
+  const limit = parseInt(req.query.limit,10) || 5
   const startingIndex = (page -1)*limit
-  const endIndex = (page * limit)
+  const endIndex = page * limit
   const total = await Post.countDocuments(query)
   const posts = await Post.find(query).populate({
     path: "author",
