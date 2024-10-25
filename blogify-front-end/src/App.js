@@ -19,6 +19,7 @@ import AccountVerification from "./Component/Users/AccountVerification";
 import PasswordResetRequest from "./Component/Users/PasswordResetRequest";
 import PasswordReset from "./Component/Users/PasswordReset";
 import UpdateUser from "./Component/Users/UpdateUser";
+import SchedulePost from "./Component/Posts/SchedulePost";
 
 
 export default function App() {
@@ -93,6 +94,16 @@ export default function App() {
             </ProtectedRoute>
           }
         ></Route> */}
+        {/* post schedule */}
+        <Route
+          path="/posts/schedule/:postId"
+          element={
+            <ProtectedRoute>
+              <SchedulePost/>
+            </ProtectedRoute>
+          }
+        ></Route>
+
 
         {/*  upload coverImage */}
         <Route

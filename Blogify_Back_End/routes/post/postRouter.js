@@ -52,6 +52,6 @@ postRouter.put("/:id/post-views-count", isLoggedin, postViewCount);
 postRouter.put("/claps/:id", isLoggedin, claps);
 
 //schedule  post
-postRouter.put("/schedule/:id", isLoggedin, schedule);
+postRouter.put("/schedule/:postId", isLoggedin, schedule);
 
 module.exports = postRouter;

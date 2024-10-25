@@ -269,6 +269,36 @@ export const getPostAction = createAsyncThunk(
   }
 );
 
+//! schedule  a  post
+export const schedulePostAction = createAsyncThunk(
+  "posts/schedule",
+  async ({sheduledPublished,postId}, { rejectWithValue, getState, dispatch }) => {
+    // make request
+
+    try {
+      const token = getState().users?.userAuth?.userInfo?.token;
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const { data } = await axios.put(
+        `http://localhost:9080/api/v1/posts/schedule/${postId}`,
+        {
+          sheduledPublished,
+        },
+        config
+      );
+
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data);
+    }
+  }
+);
+
+
 const PostSlice = createSlice({
   name: "posts",
   initialState: INTITIAL_STATE,
@@ -318,6 +348,24 @@ const PostSlice = createSlice({
     });
     //* handle the rejection
     builder.addCase(addPostActionAction.rejected, (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    });
+
+
+    //! schedule post
+    builder.addCase(schedulePostAction.pending, (state, action) => {
+      state.loading = true;
+    });
+    // handle the fulfilled state
+    builder.addCase(schedulePostAction.fulfilled, (state, action) => {
+      state.posts = action.payload;
+      state.success = true;
+      state.loading = false;
+      state.error = null;
+    });
+    //* handle the rejection
+    builder.addCase(schedulePostAction.rejected, (state, action) => {
       state.error = action.payload;
       state.loading = false;
     });
@@ -438,6 +486,12 @@ const PostSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     });
+
+   
+
+    
+
+
 
     //! Reset Error Action
     builder.addCase(resetErrorAction.fulfilled, (state) => {

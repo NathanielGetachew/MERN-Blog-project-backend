@@ -73,7 +73,10 @@ exports.getPosts = asynchandler(async (req, res) => {
   let query = {
     author: { $nin: blockedUserIds },
     $or: [
-      { scheduledPublished: { $lte: currentTime }, scheduledPublished: null },
+      {
+        sheduledPublished: { $lte: currentTime },
+        sheduledPublished: null,
+      },
     ],
   };
   //! check if category/searchterm is specified, then add to the query
@@ -84,30 +87,34 @@ exports.getPosts = asynchandler(async (req, res) => {
     query.title = { $regex: searchTerm, $options: "i" };
   }
   // pagination parameter from the request
-  const page = parseInt(req.query.page,10) || 1
-  const limit = parseInt(req.query.limit,10) || 5
-  const startingIndex = (page -1)*limit
-  const endIndex = page * limit
-  const total = await Post.countDocuments(query)
-  const posts = await Post.find(query).populate({
-    path: "author",
-    model: "User",
-    select: "email role username",
-  }).populate("category").skip(startingIndex).limit(limit)
- // pagination result
-const pagination = {} 
-if(endIndex < total){
-  pagination.next = {
-    page: page + 1,
-    limit,
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 5;
+  const startingIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const total = await Post.countDocuments(query);
+  const posts = await Post.find(query)
+    .populate({
+      path: "author",
+      model: "User",
+      select: "email role username",
+    })
+    .populate("category")
+    .skip(startingIndex)
+    .limit(limit);
+  // pagination result
+  const pagination = {};
+  if (endIndex < total) {
+    pagination.next = {
+      page: page + 1,
+      limit,
+    };
   }
-}
-if(startingIndex > 0){
-  pagination.prev = {
-    page: page - 1, 
-    limit,
+  if (startingIndex > 0) {
+    pagination.prev = {
+      page: page - 1,
+      limit,
+    };
   }
-}
   res.status(201).json({
     status: "success",
     message: "Posts Fetched Successfuly",
@@ -328,35 +335,41 @@ exports.claps = expressAsyncHandler(async (req, res) => {
   });
 });
 
-// desc scheduling a  post
-// route PUT api/v1/post/schedule/:id
-//@ access private
+///@desc   Shedule a post
+//@route  PUT /api/v1/posts/schedule/:postId
+//@access Private
+
 exports.schedule = expressAsyncHandler(async (req, res) => {
-  // get the payload
-  const { scheduledPublish } = req.body;
-  const { id } = req.params;
-  if (!id) {
-    throw new Error("post Id and schedule date are required");
+  //get the payload
+  const { sheduledPublished } = req.body;
+  const { postId } = req.params;
+  //check if postid and scheduledpublished found
+  if (!postId || !sheduledPublished) {
+    throw new Error("PostID and schedule date are required");
   }
-  // find the post
-  const post = await Post.findById(id);
+  //Find the post
+  const post = await Post.findById(postId);
   if (!post) {
-    throw new Error("post not found");
+    throw new Error("Post not found...");
   }
-  // check if th user is the author of the post
+  //check if tjhe user is the author of the post
   if (post.author.toString() !== req.userAuth._id.toString()) {
-    throw new Error("You can only schedule your own post");
+    throw new Error("You can schedulle your own post ");
   }
-  // check if the schedulepulbish date is in the past
-  const scheduleDate = new Date(scheduledPublish);
+  // Check if the scheduledPublish date is in the past
+  const scheduleDate = new Date(sheduledPublished);
   const currentDate = new Date();
   if (scheduleDate < currentDate) {
-    throw new Error("the scheduled pulbish date can't be in the past");
+    throw new Error("The scheduled publish date cannot be in the past.");
   }
-  // update the Post
-  post.sheduledPublished = scheduledPublish;
+  //update the post
+  post.sheduledPublished = sheduledPublished;
   await post.save();
-  res.status(200).json({ message: "Post scheduled Succesfully", post });
+  res.json({
+    status: "success",
+    message: "Post scheduled successfully",
+    post,
+  });
 });
 
 // desc scheduling a  post
