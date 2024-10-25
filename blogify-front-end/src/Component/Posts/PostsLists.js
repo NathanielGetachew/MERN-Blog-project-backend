@@ -20,22 +20,16 @@ const PostsLists = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [category, setCategory] = useState("");
-  
+
   // dispatch fetching post
-  
+
   useEffect(() => {
     dispatch(fetchPrivatePostsAction({ page, limit: 4, searchTerm, category }));
     dispatch(fetchCategoriesAction());
-  }, 
- [dispatch, page, searchTerm,category]);
+  }, [dispatch, page, searchTerm, category]);
 
-  
-  
+  const { categories } = useSelector((state) => state?.categories);
 
-  const { categories} = useSelector(
-    (state) => state?.categories
-  );
-  
   const handleNext = () => setPage(page + 1);
   const handleprev = () => setPage(page > 1 ? page - 1 : 1);
 
@@ -60,8 +54,8 @@ const PostsLists = () => {
               <h3 className="mb-4 text-3xl md:text-5xl leading-tight text-darkCoolGray-900 font-bold tracking-tighter">
                 Read our Trending Articles
               </h3>
-             {/* Search input */}
-             <div className="mb-4">
+              {/* Search input */}
+              <div className="mb-4">
                 <input
                   type="text"
                   placeholder="Search by title..."
@@ -83,7 +77,7 @@ const PostsLists = () => {
                 </button>
               ))}
             </div>
-/
+            /
             <div className="flex flex-wrap -mx-4 mb-12 md:mb-20">
               {/* loop */}
               {loading ? (
@@ -144,7 +138,7 @@ const PostsLists = () => {
                         </svg>
                       </Link>
                     </Link>
-                  )
+                  );
                 })
               )}
             </div>

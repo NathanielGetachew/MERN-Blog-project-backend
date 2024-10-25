@@ -32,7 +32,10 @@ export const fetchPublicPostsAction = createAsyncThunk(
 //! Fetch Private posts
 export const fetchPrivatePostsAction = createAsyncThunk(
   "posts/fetch-private-posts",
-  async ({ page = 1, limit = 4,searchTerm = "", category= ""}, { rejectWithValue, getState, dispatch }) => {
+  async (
+    { page = 1, limit = 4, searchTerm = "", category = "" },
+    { rejectWithValue, getState, dispatch }
+  ) => {
     // make request
 
     try {
